@@ -1,7 +1,7 @@
 # Modern Laravel + React Application
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
+  <img src="public/images/logo.png" width="400" alt="Application Logo">
 </p>
 
 ## 🚀 Tech Stack
@@ -40,8 +40,8 @@
 
 1. Clone the repository:
    ```bash
-   git clone [your-repo-url]
-   cd [your-project-name]
+   git clone https://github.com/AbdelazizS/union.git
+   cd union
    ```
 
 2. Install PHP dependencies:
