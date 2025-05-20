@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react";
 import { BookingForm } from "./BookingForm";
-import AdminLayout from "@/layouts/AdminLayout";
+import AdminLayout from "~/js/layouts/AdminLayout";
 
 export default function BookingCreate({ services }) {
   return (
