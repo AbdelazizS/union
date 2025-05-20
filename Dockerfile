@@ -36,6 +36,7 @@ RUN chown -R www-data:www-data /var/www \
 
 # Build assets
 ENV NODE_ENV=production
+WORKDIR /var/www
 RUN npm run build
 
 # Install Nginx
