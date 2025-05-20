@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 // Components
-import AdminLayout from "@/Layouts/AdminLayout";
+import AdminLayout from '../../../layouts/AdminLayout.jsx';
 import { Button } from "@/Components/ui/button";
 import {
   Dialog,

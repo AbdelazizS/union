@@ -6,7 +6,7 @@ import { Button } from "@/Components/ui/button";
 import { DataTable } from "@/Components/ui/data-table";
 import { columns } from "./columns";
 import { usePage } from "@inertiajs/react";
-import AdminLayout from '@/Layouts/AdminLayout';
+import AdminLayout from '../../../layouts/AdminLayout.jsx';
 import {
   Dialog,
   DialogContent,

@@ -18,7 +18,7 @@ import {
   DialogFooter,
 } from "@/Components/ui/dialog";
 import { FaqForm } from "./FaqForm";
-import AdminLayout from '@/Layouts/AdminLayout';
+import AdminLayout from '../../../layouts/AdminLayout.jsx';
 import { Badge } from "@/Components/ui/badge";
 
 const formSchema = z.object({

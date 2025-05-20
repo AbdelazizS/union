@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
-import AdminLayout from "@/Layouts/AdminLayout";
+import AdminLayout from '../../../layouts/AdminLayout.jsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
