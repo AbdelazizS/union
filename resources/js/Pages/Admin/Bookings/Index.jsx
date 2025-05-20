@@ -17,8 +17,7 @@ import {
 } from "@/components/ui/select";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { columns, statuses } from "./columns";
-import AdminLayout from '../../../layouts/AdminLayout.jsx';
-
+import AdminLayout from '@/Layouts/AdminLayout.jsx';
 export default function BookingsIndex({ bookings, filters }) {
   const [selectedDateRange, setSelectedDateRange] = useState({
     from: filters.date_from ? new Date(filters.date_from) : undefined,
