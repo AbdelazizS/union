@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AdminLayout from '../../../layouts/AdminLayout.jsx';
+import AdminLayout from '@/Layouts/AdminLayout.jsx';
 import { Head } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { DateRangePicker } from "@/Components/ui/date-range-picker";

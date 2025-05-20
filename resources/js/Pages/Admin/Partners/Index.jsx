@@ -18,7 +18,7 @@ import {
   DialogFooter,
 } from "@/Components/ui/dialog";
 import { PartnerForm } from "./PartnerForm";
-import AdminLayout from '../../../layouts/AdminLayout.jsx';
+import AdminLayout from '@/Layouts/AdminLayout.jsx';
 import { Badge } from "@/Components/ui/badge";
 import { Card, CardContent } from "@/Components/ui/card";
 

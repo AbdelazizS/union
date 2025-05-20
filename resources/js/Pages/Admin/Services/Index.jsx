@@ -19,7 +19,7 @@ import {
 } from "@/Components/ui/dialog";
 import { ServiceForm } from "./ServiceForm";
 import { usePage } from "@inertiajs/react";
-import AdminLayout from '../../../layouts/AdminLayout.jsx';
+import AdminLayout from '@/Layouts/AdminLayout.jsx';
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

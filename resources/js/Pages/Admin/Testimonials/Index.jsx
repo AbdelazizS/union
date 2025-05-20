@@ -18,7 +18,7 @@ import {
   DialogFooter,
 } from "@/Components/ui/dialog";
 import { TestimonialForm } from "./TestimonialForm";
-import AdminLayout from '../../../layouts/AdminLayout.jsx';
+import AdminLayout from '@/Layouts/AdminLayout.jsx';
 
 const formSchema = z.object({
   customer_name: z.string().min(2, "Name must be at least 2 characters"),
