@@ -1,0 +1,44 @@
+# Global rules
+User-agent: *
+Allow: /
+Allow: /sitemap.xml
+Allow: /our-services
+Allow: /about
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+
+# Disallow admin and auth routes
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /profile
+Disallow: /booking/create
+Disallow: /booking/confirmation/
+
+# Disallow API routes
+Disallow: /api/
+
+# Disallow system files
+Disallow: /.env
+Disallow: /.git
+Disallow: /.github
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /node_modules/
+Disallow: /bootstrap/
+Disallow: /config/
+Disallow: /database/
+Disallow: /resources/
+Disallow: /routes/
+Disallow: /tests/
+
+# Crawl-delay
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://uniongate.com/sitemap.xml
