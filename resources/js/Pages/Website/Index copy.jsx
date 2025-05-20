@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link } from "@inertiajs/react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 

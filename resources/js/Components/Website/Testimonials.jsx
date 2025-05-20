@@ -3,7 +3,7 @@ import { motion, useInView } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Star , Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/Components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 const Rating = ({ rating }) => {
     return (

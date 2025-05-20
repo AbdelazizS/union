@@ -1,7 +1,7 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/admin/app-sidebar"
+import { SidebarProvider, SidebarTrigger } from "@components/ui/sidebar"
+import { AppSidebar } from "@components/admin/app-sidebar"
 import { Toaster } from "sonner"
-import AdminNavbar from "@/Components/Admin/AdminNavbar"
+import AdminNavbar from "@components/admin/AdminNavbar"
 import { usePage } from '@inertiajs/react';
 
 export default function Layout({ children }) {

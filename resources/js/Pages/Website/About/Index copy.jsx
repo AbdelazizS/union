@@ -18,8 +18,8 @@ import {
     Shield,
     BadgeCheck
 } from "lucide-react";
-import { Button } from "@/Components/ui/button";
-import { Card, CardContent } from "@/Components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
 import { Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";

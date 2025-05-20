@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Button } from '@/Components/ui/button';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, Star, Shield, Award, Users, Clock, CheckCircle, Leaf, BadgeCheck } from 'lucide-react';
 
 export default function Hero() {

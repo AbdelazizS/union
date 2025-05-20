@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { Button } from '@/Components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/Components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navigation = [
     { name: 'Home', href: '/' },

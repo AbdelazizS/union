@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { Badge } from "@/Components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Award, Trophy, Users, Star, Shield } from "lucide-react";
 
 export default function HeroSection() {

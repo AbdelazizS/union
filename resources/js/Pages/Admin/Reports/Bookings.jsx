@@ -1,8 +1,8 @@
 import { useState } from "react";
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
 import { Head } from "@inertiajs/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { DateRangePicker } from "@/Components/ui/date-range-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { format } from "date-fns";
 import {
   LineChart,
@@ -15,7 +15,7 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import { Badge } from "@/Components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -29,7 +29,7 @@ import {
   LayersIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/Components/ui/progress";
+import { Progress } from "@/components/ui/progress";
 
 // Custom tooltip styles
 const CustomTooltip = ({ active, payload, label }) => {

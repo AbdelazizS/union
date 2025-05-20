@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Card } from "@/Components/ui/card";
-import { Badge } from "@/Components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Sparkles, Award, Star } from "lucide-react";
 
 const Partners = ({ partners = [] }) => {

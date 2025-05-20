@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Star, Users, Shield, Sparkles, Calendar, ArrowRight as ArrowRightIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Link } from '@inertiajs/react';

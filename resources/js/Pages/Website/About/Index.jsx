@@ -1,8 +1,8 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
-import HeroSection from "@/Components/Website/About/HeroSection";
-import MissionSection from "@/Components/Website/About/MissionSection";
-import ValuesSection from "@/Components/Website/About/ValuesSection";
+import HeroSection from "@/components/website/About/HeroSection";
+import MissionSection from "@/components/website/About/MissionSection";
+import ValuesSection from "@/components/website/About/ValuesSection";
 import {
     CheckCircle2,
     Leaf,
@@ -14,7 +14,7 @@ import {
     Star,
     ArrowRight
 } from "lucide-react";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link } from "@inertiajs/react";
 
 export default function About() {

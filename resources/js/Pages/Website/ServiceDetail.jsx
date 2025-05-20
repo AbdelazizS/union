@@ -26,8 +26,8 @@ import { Head } from '@inertiajs/react';
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { Badge } from "@/Components/ui/badge";
-import { Button } from "@/Components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Accordion,

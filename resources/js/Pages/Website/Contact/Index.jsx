@@ -2,9 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { router } from "@inertiajs/react";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2, Mail, Phone, MapPin, Clock, CheckCircle2, MessageCircle, PhoneCall, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import {
     Form,
@@ -13,12 +13,12 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/Components/ui/form";
+} from "@/components/ui/form";
 import { toast } from "sonner";
 import { useState } from "react";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent } from "@/Components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 

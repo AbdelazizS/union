@@ -1,4 +1,4 @@
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -6,9 +6,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
-import { ImageUpload } from "@/Components/ui/image-upload";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export function PartnerForm({ form, onSubmit, isSubmitting, isEditing = false }) {
   return (

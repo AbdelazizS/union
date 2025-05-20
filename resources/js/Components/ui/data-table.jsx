@@ -14,16 +14,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/Components/ui/table";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/Components/ui/select";
+} from "@/components/ui/select";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 
 export function DataTable({

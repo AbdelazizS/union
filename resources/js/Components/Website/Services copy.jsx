@@ -8,7 +8,7 @@ import {
     Sofa,
     UtensilsCrossed
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const services = [
     {

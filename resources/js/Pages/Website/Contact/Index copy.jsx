@@ -5,16 +5,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Toaster, toast } from "sonner";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";
 import { 
     MapPin, 
     Phone, 

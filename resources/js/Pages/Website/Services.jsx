@@ -10,13 +10,13 @@ import { Link } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
-import HeroSection from "@/Components/Website/Services/HeroSection";
-import StatsSection from "@/Components/Website/Services/StatsSection";
-import WhyChooseUsSection from "@/Components/Website/Services/WhyChooseUsSection";
-import ProcessSection from "@/Components/Website/Services/ProcessSection";
-import TestimonialsSection from "@/Components/Website/Services/TestimonialsSection";
-import CTASection from "@/Components/Website/Services/CTASection";
-import ServicesGrid from "@/Components/Website/Services/ServicesGrid";
+import HeroSection from "@/components/website/Services/HeroSection";
+import StatsSection from "@/components/website/Services/StatsSection";
+import WhyChooseUsSection from "@/components/website/Services/WhyChooseUsSection";
+import ProcessSection from "@/components/website/Services/ProcessSection";
+import TestimonialsSection from "@/components/website/Services/TestimonialsSection";
+import CTASection from "@/components/website/Services/CTASection";
+import ServicesGrid from "@/components/website/Services/ServicesGrid";
 
 export default function Services({ categories = [], testimonials = [] }) {
     const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.com';

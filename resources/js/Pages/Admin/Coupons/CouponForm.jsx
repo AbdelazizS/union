@@ -6,27 +6,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/Components/ui/form";
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/Components/ui/select";
-import { Input } from "@/Components/ui/input";
-import { Button } from "@/Components/ui/button";
-import { Switch } from "@/Components/ui/switch";
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/Components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/Components/ui/popover";
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { DialogFooter } from "@/Components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 
 export function CouponForm({ form, onSubmit, isSubmitting }) {
   return (

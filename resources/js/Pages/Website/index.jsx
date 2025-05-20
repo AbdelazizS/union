@@ -1,11 +1,11 @@
 import WebsiteLayout from '@/Layouts/WebsiteLayout';
-import HeroSection from '@/Components/Website/Hero';
-import ServicesSection from '@/Components/Website/Services';
-import AboutSection from '@/Components/Website/About';
-import FeaturesSection from '@/Components/Website/Features';
-import TestimonialsSection from '@/Components/Website/Testimonials';
-import FAQSection from '@/Components/Website/FAQ';
-import Partners from '@/Components/Website/Partners';
+import HeroSection from '@/components/website/Hero';
+import ServicesSection from '@/components/website/Services';
+import AboutSection from '@/components/website/About';
+import FeaturesSection from '@/components/website/Features';
+import TestimonialsSection from '@/components/website/Testimonials';
+import FAQSection from '@/components/website/FAQ';
+import Partners from '@/components/website/Partners';
 
 export default function Home({ auth, services, testimonials, partners, faqs }) {
     const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.com';

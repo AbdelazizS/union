@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import Navbar from '@/Components/Website/Navbar';
-import TopBar from '@/Components/Website/TopBar';
-import FooterSection from '@/Components/Website/Footer';
-import LoadingSpinner from '@/Components/Website/LoadingSpinner';
-import SEO from '@/Components/SEO';
+import Navbar from '@/components/website/Navbar';
+import TopBar from '@/components/website/TopBar';
+import FooterSection from '@/components/website/Footer';
+import LoadingSpinner from '@/components/website/LoadingSpinner';
+import SEO from '@/components/SEO';
 
 export default function WebsiteLayout({ children, title, description, canonical, ogImage, structuredData }) {
     const [loading, setLoading] = useState(true);

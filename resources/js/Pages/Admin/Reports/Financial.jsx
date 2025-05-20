@@ -1,8 +1,8 @@
 import { useState } from "react";
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
 import { Head } from "@inertiajs/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { DateRangePicker } from "@/Components/ui/date-range-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { format } from "date-fns";
 import {
   LineChart,

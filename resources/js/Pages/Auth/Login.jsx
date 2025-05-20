@@ -6,16 +6,16 @@ import { toast } from "sonner";
 import { Shield, Users2, BarChart3, LayoutGrid, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/Components/ui/card";
+} from "@/components/ui/card";
 import {
     Form,
     FormControl,
@@ -23,8 +23,8 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/Components/ui/form";
-import { Checkbox } from "@/Components/ui/checkbox";
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Form validation schema
 const formSchema = z.object({

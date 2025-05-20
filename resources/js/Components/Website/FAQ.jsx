@@ -5,9 +5,9 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from '@/Components/ui/accordion';
-import { Card } from '@/Components/ui/card';
-import { Button } from '@/Components/ui/button';
+} from '@/components/ui/accordion';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
 
 export default function FAQ({ faqs = [] }) {

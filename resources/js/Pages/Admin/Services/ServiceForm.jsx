@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -7,19 +7,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
-import { Switch } from "@/Components/ui/switch";
-import { Textarea } from "@/Components/ui/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/Components/ui/select";
+} from "@/components/ui/select";
 import { X } from "lucide-react";
-import { ImageUpload } from "@/Components/ui/image-upload";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export function ServiceForm({ form, onSubmit, isSubmitting, categories }) {
   const addFeature = (e) => {

@@ -18,10 +18,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
     DropdownMenuGroup,
-} from '@/Components/ui/dropdown-menu';
-import { Button } from '@/Components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Badge } from '@/Components/ui/badge';
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminNavbar({ breadcrumbs = [] }) {
     const { auth, notifications } = usePage().props;

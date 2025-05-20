@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Head, router } from "@inertiajs/react";
 import {Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/Components/ui/button";
-import { DataTable } from "@/Components/ui/data-table";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,10 +16,10 @@ import {
   DialogTrigger,
   DialogDescription,
   DialogFooter,
-} from "@/Components/ui/dialog";
+} from "@/components/ui/dialog";
 import { FaqForm } from "./FaqForm";
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
-import { Badge } from "@/Components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   category: z.string().min(1, "Category is required"),

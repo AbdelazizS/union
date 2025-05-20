@@ -16,7 +16,7 @@ import * as z from "zod";
 
 // Components
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +25,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
-} from "@/Components/ui/dialog";
-import { DataTable } from "@/Components/ui/data-table";
+} from "@/components/ui/dialog";
+import { DataTable } from "@/components/ui/data-table";
 import { CouponForm } from "./CouponForm";
 import { columns } from "./columns";
 
