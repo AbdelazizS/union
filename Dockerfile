@@ -16,7 +16,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy existing application directory
+# Copy package files first
+COPY package*.json ./
+COPY vite.config.js ./
+
+# Install Node dependencies
+RUN npm install
+
+# Copy the rest of the application
 COPY . .
 
 # Install Laravel dependencies
@@ -27,8 +34,8 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Install Node dependencies & build assets
-RUN npm install && npm run build
+# Build assets
+RUN npm run build
 
 # Install Nginx
 RUN apt-get install -y nginx
