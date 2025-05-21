@@ -16,7 +16,14 @@ COPY . .
 
 # Build the application
 ENV NODE_ENV=production
-RUN npm run build
+ENV VITE_BASE_URL=/app
+RUN cd /app && \
+    # Create a temporary jsconfig.json to help with path resolution
+    echo '{"compilerOptions": {"baseUrl": ".", "paths": {"@/*": ["resources/js/*"]}}}' > jsconfig.json && \
+    # Run the build
+    npm run build && \
+    # Verify the build output exists
+    ls -la public/build
 
 # Production stage
 FROM php:8.2-fpm
