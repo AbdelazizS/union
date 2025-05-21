@@ -6,23 +6,23 @@
     # Set working directory
     WORKDIR /app
     
-    # Copy package files and Vite config
-    COPY package*.json vite.config.js ./
+    # Copy package files and configs first for better caching
+    COPY package*.json ./
+    COPY vite.config.js ./
+    COPY tailwind.config.js ./
+    COPY postcss.config.js ./
     
     # Install dependencies
     RUN npm install
     
-    # First, copy only the resources directory to verify it exists
+    # Copy application files (include both resources and shadcn components)
     COPY resources ./resources
+    COPY components ./components  # For shadcn/ui components
     
-    # Verify the resources directory structure (updated to match actual structure)
-    RUN echo "Checking resources directory structure:" && \
-        ls -la /app/resources && \
-        echo "Checking js directory:" && \
+    # Verify the directory structure (debugging)
+    RUN echo "Verifying directories:" && \
+        ls -la /app/components/ui && \
         ls -la /app/resources/js
-    
-    # Now copy the rest of the application
-    COPY . .
     
     # Build the frontend assets
     ENV NODE_ENV=production
@@ -34,9 +34,9 @@
     FROM php:8.2-fpm
     
     # Set working directory
-    WORKDIR /var/www
+    WORKDIR /var/www/html
     
-    # Install system dependencies and PHP extensions
+    # Install system dependencies
     RUN apt-get update && apt-get install -y --no-install-recommends \
         git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
         && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath \
@@ -45,24 +45,23 @@
     # Install Composer
     COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
     
-    # Copy only built Vite assets
-    COPY --from=build /app/public/build /var/www/public/build
+    # Copy built assets from build stage
+    COPY --from=build /app/public/build ./public/build
     
-    # Copy Laravel application
+    # Copy Laravel application files
     COPY . .
     
-    # Laravel: install PHP dependencies
+    # Install PHP dependencies
     RUN composer install --no-dev --optimize-autoloader
     
-    # Laravel: permissions
-    RUN chown -R www-data:www-data /var/www \
-        && chmod -R 755 /var/www/storage \
-        && chmod -R 755 /var/www/bootstrap/cache
+    # Set permissions
+    RUN chown -R www-data:www-data /var/www/html \
+        && chmod -R 775 storage bootstrap/cache
     
     # Configure Nginx
     COPY docker/nginx.conf /etc/nginx/sites-available/default
     
-    # Expose HTTP
+    # Expose port
     EXPOSE 80
     
     # Start services
