@@ -42,6 +42,7 @@ services:
     postDeploy: |
       php artisan config:clear
       php artisan config:cache
+      php artisan session:table
       php artisan migrate --force
       php artisan storage:link
       php artisan view:cache
