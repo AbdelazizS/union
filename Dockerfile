@@ -1,4 +1,4 @@
-# Use PHP image with necessary extensions
+# Use PHP base image with required extensions
 FROM php:8.2-fpm
 
 # Set working directory
@@ -6,49 +6,45 @@ WORKDIR /var/www
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath
 
-# Install Node.js
+# Install Node.js (for Vite)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy package files first
-COPY package*.json ./
-COPY vite.config.js ./
+# Copy only package files and Vite config for caching node_modules layer
+COPY package*.json vite.config.js ./
 
 # Install Node dependencies
 RUN npm install
 
-# Copy the rest of the application
+# Copy full application source
 COPY . .
 
-# Debug: List contents of the components directory
-RUN ls -la /var/www/resources/js/components/ui/
+# Optional: debug directory existence (will not fail if missing)
+RUN ls -la /var/www/resources/js/components/ui/ || echo "No UI folder found (expected if it's empty)"
 
-# Install Laravel dependencies
+# Laravel: install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Laravel permissions
+# Laravel: set correct permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Build assets
+# Build frontend assets
 ENV NODE_ENV=production
 RUN npm run build
 
-# Install Nginx
-RUN apt-get install -y nginx
-
-# Copy Nginx configuration
+# Configure Nginx
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-# Expose port 80
+# Expose HTTP
 EXPOSE 80
 
-# Start Nginx and PHP-FPM
+# Start both Nginx and PHP-FPM
 CMD service nginx start && php-fpm
