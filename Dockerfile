@@ -16,17 +16,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy only package files and Vite config for caching node_modules layer
-COPY package*.json vite.config.js ./
+# Copy full application source first
+COPY . .
 
 # Install Node dependencies
 RUN npm install
-
-# Copy full application source
-COPY . .
-
-# Optional: debug directory existence (will not fail if missing)
-RUN ls -la /var/www/resources/js/components/ui/ || echo "No UI folder found (expected if it's empty)"
 
 # Laravel: install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
