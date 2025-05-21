@@ -14,11 +14,11 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './resources/js'),
-            '~': path.resolve(__dirname, './resources'),
-            '@components': path.resolve(__dirname, './resources/js/components'),
-            '@layouts': path.resolve(__dirname, './resources/js/Layouts'),
-            '@pages': path.resolve(__dirname, './resources/js/Pages'),
+            '@': '/app/resources/js',
+            '~': '/app/resources',
+            '@components': '/app/resources/js/components',
+            '@layouts': '/app/resources/js/Layouts',
+            '@pages': '/app/resources/js/Pages',
         },
     },
     build: {

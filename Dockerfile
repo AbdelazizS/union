@@ -18,8 +18,34 @@ COPY . .
 ENV NODE_ENV=production
 ENV VITE_BASE_URL=/app
 RUN cd /app && \
-    # Create a temporary jsconfig.json to help with path resolution
-    echo '{"compilerOptions": {"baseUrl": ".", "paths": {"@/*": ["resources/js/*"]}}}' > jsconfig.json && \
+    # Create a temporary directory for the build
+    mkdir -p /app/tmp && \
+    # Copy the UI components to a temporary directory
+    cp -r /app/resources/js/components/ui /app/tmp/ && \
+    # Create a temporary vite config for the build
+    echo 'import { defineConfig } from "vite"; \
+    import laravel from "laravel-vite-plugin"; \
+    import react from "@vitejs/plugin-react"; \
+    import path from "path"; \
+    export default defineConfig({ \
+        plugins: [ \
+            laravel({ \
+                input: "resources/js/app.jsx", \
+                ssr: "resources/js/ssr.jsx", \
+                refresh: true, \
+            }), \
+            react(), \
+        ], \
+        resolve: { \
+            alias: { \
+                "@": path.resolve(__dirname, "resources/js"), \
+                "~": path.resolve(__dirname, "resources"), \
+                "@components": path.resolve(__dirname, "resources/js/components"), \
+                "@layouts": path.resolve(__dirname, "resources/js/Layouts"), \
+                "@pages": path.resolve(__dirname, "resources/js/Pages"), \
+            }, \
+        }, \
+    });' > /app/vite.config.js && \
     # Run the build
     npm run build && \
     # Verify the build output exists
