@@ -12,11 +12,21 @@ COPY package*.json vite.config.js ./
 # Install dependencies
 RUN npm install
 
-# Copy full application source (including UI components)
-COPY . .
+# First, copy only the resources directory to verify it exists
+COPY resources ./resources
 
-# Verify the UI components directory exists
-RUN ls -la /app/resources/js/components/ui
+# Verify the resources directory structure
+RUN echo "Checking resources directory structure:" && \
+    ls -la /app/resources && \
+    echo "Checking js directory:" && \
+    ls -la /app/resources/js && \
+    echo "Checking components directory:" && \
+    ls -la /app/resources/js/components && \
+    echo "Checking ui directory:" && \
+    ls -la /app/resources/js/components/ui
+
+# Now copy the rest of the application
+COPY . .
 
 # Build the frontend assets
 ENV NODE_ENV=production
