@@ -90,4 +90,4 @@ RUN nginx -t
 EXPOSE 80
 
 # Start both Nginx and PHP-FPM in foreground for container
-CMD php-fpm & nginx -g 'daemon off;'
+CMD php-fpm & nginx -g 'daemon off;' & tail -n 50 storage/logs/laravel.log
