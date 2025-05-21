@@ -1,8 +1,9 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
-import HeroSection from "@/components/website/About/HeroSection";
-import MissionSection from "@/components/website/About/MissionSection";
-import ValuesSection from "@/components/website/About/ValuesSection";
+import HeroSection from "@/components/website/about/HeroSection";
+import { MissionSection } from "@/components/website/about/MissionSection";
+import ValuesSection from "@/components/website/about/ValuesSection";
+
 import {
     CheckCircle2,
     Leaf,
