@@ -83,8 +83,11 @@ RUN chown -R www-data:www-data /var/www/html \
 # Configure Nginx
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
+# Validate Nginx config at build time
+RUN nginx -t
+
 # Expose port
 EXPOSE 80
 
-# Start services
-CMD service nginx start && php-fpm
+# Start both Nginx and PHP-FPM in foreground for container
+CMD php-fpm & nginx -g 'daemon off;'
