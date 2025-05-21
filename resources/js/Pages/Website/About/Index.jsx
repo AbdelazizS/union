@@ -1,7 +1,7 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import WebsiteLayout from "@/Layouts/WebsiteLayout";
 import HeroSection from "@/components/website/about/HeroSection";
-import { MissionSection } from "@/components/website/about/MissionSection";
+import MissionSection from "@/components/website/about/MissionSection";
 import ValuesSection from "@/components/website/about/ValuesSection";
 
 import {
