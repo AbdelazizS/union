@@ -1,4 +1,24 @@
-# Use PHP base image with required extensions
+# Build stage
+FROM node:18 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY vite.config.js ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Build the application
+ENV NODE_ENV=production
+RUN npm run build
+
+# Production stage
 FROM php:8.2-fpm
 
 # Set working directory
@@ -9,19 +29,11 @@ RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath
 
-# Install Node.js (for Vite)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy package files first for better caching
-COPY package*.json ./
-COPY vite.config.js ./
-
-# Install Node dependencies
-RUN npm install
+# Copy the built assets from the build stage
+COPY --from=build /app/public/build /var/www/public/build
 
 # Copy the rest of the application
 COPY . .
@@ -33,14 +45,6 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
-
-# Build frontend assets
-ENV NODE_ENV=production
-ENV VITE_BASE_URL=/var/www
-RUN cd /var/www && \
-    npm run build && \
-    # Verify the build output exists
-    ls -la public/build
 
 # Configure Nginx
 COPY docker/nginx.conf /etc/nginx/sites-available/default
