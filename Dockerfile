@@ -49,7 +49,7 @@ WORKDIR /var/www/html
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev libpq-dev nginx \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
