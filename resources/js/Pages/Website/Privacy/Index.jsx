@@ -44,24 +44,35 @@ export default function Privacy() {
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Privacy Policy",
-        "description": "Privacy Policy for Professional Cleaning Services. Learn how we collect, use, and protect your personal information.",
+        "name": "Privacy Policy | Union Gate",
+        "description": "Privacy Policy for Union Gate's Professional Cleaning Services in Edinburgh. Learn how we collect, use, and protect your personal information.",
         "publisher": {
             "@type": "Organization",
-            "name": "Professional Cleaning Services"
+            "name": "Union Gate",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1 Lochside View",
+                "addressLocality": "Edinburgh",
+                "addressRegion": "Scotland",
+                "postalCode": "EH12 9DH",
+                "addressCountry": "United Kingdom"
+            },
+            "telephone": "+477 730 788 3811",
+            "email": "info@uniongate.uk",
+            "url": "https://uniongate.uk"
         },
         "datePublished": "2024-01-01",
-        "dateModified": "2024-01-01"
+        "dateModified": new Date().toISOString().split('T')[0]
     };
 
     return (
         <WebsiteLayout
-            title="Privacy Policy | Professional Cleaning Services"
-            description="Read our privacy policy to understand how we collect, use, and protect your personal information. We are committed to maintaining your privacy and data security."
-            canonical="https://yourwebsite.com/privacy"
-            ogImage="/images/privacy-og.jpg"
+            title="Privacy Policy | Union Gate Cleaning Services Edinburgh"
+            description="Read Union Gate's privacy policy to understand how we collect, use, and protect your personal information. We are committed to maintaining your privacy and data security in Edinburgh."
+            canonical="/privacy"
+           ogImage="/favicon.ico"
             structuredData={structuredData}
-            keywords="privacy policy, data protection, personal information, cleaning service privacy, data security"
+            keywords="Union Gate privacy policy, Edinburgh cleaning service data protection, personal information protection Scotland, cleaning service privacy Edinburgh, data security UK"
         >
             {/* Hero Section */}
             <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden  bg-primary/5 z-10">
@@ -161,7 +172,7 @@ export default function Privacy() {
                             </ul>
                             <div className="mt-6 flex items-center gap-2 text-primary">
                                 <ChevronRight className="w-4 h-4" />
-                                <a href="mailto:privacy@company.com" className="hover:underline">
+                                <a href="mailto:info@uniongate.uk" className="hover:underline">
                                     Contact our Privacy Team
                                 </a>
                             </div>

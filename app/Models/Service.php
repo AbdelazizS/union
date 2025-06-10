@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
@@ -17,7 +19,6 @@ class Service extends Model
         'slug',
         'category_id',
         'description',
-        'base_price',
         'duration_minutes',
         'features',
         'is_active',
@@ -30,7 +31,6 @@ class Service extends Model
     ];
 
     protected $casts = [
-        'base_price' => 'decimal:2',
         'duration_minutes' => 'integer',
         'features' => 'array',
         'is_active' => 'boolean',
@@ -62,7 +62,7 @@ class Service extends Model
         });
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class, 'category_id');
     }
@@ -72,15 +72,29 @@ class Service extends Model
         return $this->hasMany(Booking::class);
     }
 
-    public function calculatePrice($hours)
+    public function options(): HasMany
     {
-        $basePrice = $this->base_price;
-        $categoryRate = $this->category->hourly_rate;
-        
-        // Use the higher of base price or category rate
-        $hourlyRate = max($basePrice, $categoryRate);
-        
-        return $hourlyRate * $hours;
+        return $this->hasMany(ServiceOption::class);
+    }
+
+    public function activeOptions()
+    {
+        return $this->options()->active();
+    }
+
+    public function calculatePrice($selectedOptions)
+    {
+        $total = 0;
+        $quantity = request()->input('quantity', 1);
+
+        foreach ($selectedOptions as $optionId) {
+            $option = $this->options()->find($optionId);
+            if ($option) {
+                $optionQuantity = $option->is_variable ? $quantity : 1;
+                $total += $option->price * $optionQuantity;
+            }
+        }
+        return $total;
     }
 
     public function scopeActive($query)
@@ -109,7 +123,8 @@ class Service extends Model
 
     public function getFormattedPriceAttribute()
     {
-        return number_format($this->base_price, 2);
+        $minPrice = $this->options()->active()->min('price');
+        return $minPrice ? number_format($minPrice, 2) : '0.00';
     }
 
     public function getIconUrlAttribute()
@@ -127,14 +142,6 @@ class Service extends Model
 
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
-            return null;
-        }
-        
-        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
-        }
-
-        return asset('storage/' . $this->image);
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 } 

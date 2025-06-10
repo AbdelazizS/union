@@ -87,10 +87,10 @@ export default function Bookings({ stats, bookingsByDate, popularServices, dateR
               Detailed insights and metrics for your booking performance
             </p>
           </div>
-          <DateRangePicker date={date} onDateChange={handleDateChange} />
+          {/* <DateRangePicker date={date} onDateChange={handleDateChange} /> */}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-200">
             <div className="absolute top-0 right-0 w-32 h-32 -mt-8 -mr-8">
               <div className="relative w-full h-full">
@@ -181,43 +181,6 @@ export default function Bookings({ stats, bookingsByDate, popularServices, dateR
                           : 0}%` 
                       }}
                     />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 -mt-8 -mr-8">
-              <div className="relative w-full h-full">
-                <div className="absolute inset-0 bg-primary/5 transform rotate-45" />
-              </div>
-            </div>
-            <CardHeader>
-              <CardTitle className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs uppercase tracking-wider">Average Duration</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold tracking-tight">
-                    {typeof stats.avg_duration === 'number' 
-                      ? stats.avg_duration.toFixed(1)
-                      : typeof stats.avg_duration === 'string'
-                        ? parseFloat(stats.avg_duration).toFixed(1)
-                        : '0'}
-                  </span>
-                  <span className="text-sm text-muted-foreground">hours</span>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Min Time</p>
-                    <p className="text-sm font-medium">1.0h</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Max Time</p>
-                    <p className="text-sm font-medium">8.0h</p>
                   </div>
                 </div>
               </div>

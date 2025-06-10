@@ -46,12 +46,12 @@ const contactInfo = [
     {
         icon: <Phone className="h-6 w-6" />,
         title: "Phone",
-        content: "+44 123 456 7890",
+        content: "+44 730 788 3811 ",
         description: "Available 24/7 for urgent inquiries",
         color: "from-green-500/20 to-green-600/20",
         iconColor: "text-green-500",
         action: {
-            href: "tel:+441231234567"
+            href: "tel:+447307883811"
         },
         gradient: "bg-gradient-to-br from-green-500/10 to-green-600/10",
         hoverGradient: "hover:from-green-500/20 hover:to-green-600/20",
@@ -61,12 +61,12 @@ const contactInfo = [
     {
         icon: <Mail className="h-6 w-6" />,
         title: "Email",
-        content: "contact@company.com",
+        content: "info@uniongate.uk",
         description: "We'll respond within 24 hours",
         color: "from-blue-500/20 to-blue-600/20",
         iconColor: "text-blue-500",
         action: {
-            href: "mailto:contact@company.com"
+            href: "mailto:info@uniongate.uk"
         },
         gradient: "bg-gradient-to-br from-blue-500/10 to-blue-600/10",
         hoverGradient: "hover:from-blue-500/20 hover:to-blue-600/20",
@@ -76,7 +76,7 @@ const contactInfo = [
     {
         icon: <MapPin className="h-6 w-6" />,
         title: "Office",
-        content: "123 Business Street, London, UK",
+        content: "1 Lochside View, Edinburgh EH12 9DH",
         description: "Visit us during business hours",
         color: "from-purple-500/20 to-purple-600/20",
         iconColor: "text-purple-500",
@@ -88,8 +88,8 @@ const contactInfo = [
     {
         icon: <Clock className="h-6 w-6" />,
         title: "Hours",
-        content: "Mon - Fri: 9:00 AM - 6:00 PM",
-        description: "Weekend appointments available",
+        content: "Mon - Fri: 8:00 AM - 6:00 PM",
+        description: "Sat - Sun: 9:00 AM - 4:00 PM",
         color: "from-orange-500/20 to-orange-600/20",
         iconColor: "text-orange-500",
         gradient: "bg-gradient-to-br from-orange-500/10 to-orange-600/10",
@@ -125,23 +125,29 @@ export default function Contact() {
     const onSubmit = async (data) => {
         setIsProcessing(true);
         try {
-            await router.post(route('website.contact.submit'), data, {
-            onSuccess: () => {
+            await router.post(route('contact.submit'), data, {
+                onSuccess: () => {
                     form.reset();
                     setShowSuccessDialog(true);
-                    toast.success("Message sent successfully!");
+                    // toast.success("Message sent successfully!");
                 },
                 onError: (errors) => {
-                    Object.keys(errors).forEach((key) => {
-                        form.setError(key, { message: errors[key] });
-                    });
-                    toast.error("Failed to send message. Please check the form for errors.");
+                    console.error('Form submission error:', errors);
+                    if (errors.message) {
+                        toast.error(errors.message);
+                    } else {
+                        Object.keys(errors).forEach((key) => {
+                            form.setError(key, { message: errors[key] });
+                        });
+                        toast.error("Failed to send message. Please check the form for errors.");
+                    }
                 },
                 onFinish: () => {
                     setIsProcessing(false);
-            },
-        });
+                },
+            });
         } catch (error) {
+            console.error('Unexpected error:', error);
             toast.error("An unexpected error occurred. Please try again.");
             setIsProcessing(false);
         }
@@ -154,33 +160,46 @@ export default function Contact() {
         "@type": "ContactPage",
         "mainEntity": {
             "@type": "Organization",
-            "name": "Professional Cleaning Services",
+            "name": "Union Gate",
             "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+1234567890",
+                "telephone": "+477 730 788 3811",
                 "contactType": "customer service",
-                "email": "contact@yourwebsite.com",
-                "availableLanguage": ["English", "Spanish"]
+                "email": "info@uniongate.uk",
+                "availableLanguage": ["English"]
             },
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "Your Street Address",
-                "addressLocality": "Your City",
-                "addressRegion": "Your State",
-                "postalCode": "Your Postal Code",
-                "addressCountry": "Your Country"
+                "streetAddress": "1 Lochside View",
+                "addressLocality": "Edinburgh",
+                "addressRegion": "Scotland",
+                "postalCode": "EH12 9DH",
+                "addressCountry": "United Kingdom"
+            },
+            "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday"
+                ],
+                "opens": "08:00",
+                "closes": "20:00"
             }
         }
     };
 
     return (
         <WebsiteLayout
-            title="Contact Us | Professional Cleaning Services"
-            description="Get in touch with our professional cleaning team. We're here to answer your questions and provide a free quote for your cleaning needs."
-            canonical="https://yourwebsite.com/contact"
-            ogImage="/images/contact-og.jpg"
+            title="Contact Union Gate | Professional Cleaning Services Edinburgh"
+            description="Get in touch with Union Gate's professional cleaning team in Edinburgh. We're here to answer your questions and provide a free quote for your cleaning needs. Available 24/7 for urgent inquiries."
+            canonical="/contact"
+    ogImage="/favicon.ico"
             structuredData={structuredData}
-            keywords="contact cleaning service, cleaning service phone number, cleaning service email, cleaning service address, get cleaning quote"
+            keywords="Union Gate contact Edinburgh, cleaning service phone number Scotland, cleaning service email Edinburgh, cleaning service address EH12 9DH, get cleaning quote Edinburgh"
         >
             <Toaster position="top-right" />
             
@@ -244,7 +263,14 @@ export default function Contact() {
                                 className="bg-green-500 hover:bg-green-600"
                                 onClick={() => window.open('https://wa.me/441231234567', '_blank')}
                             >
-                                <MessageCircle className="w-5 h-5 mr-2" />
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    viewBox="0 0 24 24" 
+                                    fill="currentColor" 
+                                    className="w-5 h-5 mr-2"
+                                >
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
                                 Chat on WhatsApp
                             </Button>
                             <Button 
@@ -532,7 +558,7 @@ export default function Contact() {
                                     transition={{ duration: 0.2 }}
                                 >
                                     <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.674207303538!2d-0.09273292347667867!3d51.505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4876034d2a40108d%3A0xaee5f2de750c84ac!2sLondon%2C%20UK!5e0!3m2!1sen!2sus!4v1709123456789!5m2!1sen!2sus"
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2234.7632130528577!2d-3.3185184000000003!3d55.936142700000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4887c53f24352aed%3A0xb008fad15cefbe40!2zMSBMb2Noc2lkZSBWaWV3LCBFZGluYnVyZ2ggRUgxMiA5REjYjCDYp9mE2YXZhdmE2YPYqSDYp9mE2YXYqtit2K_YqQ!5e0!3m2!1sar!2s!4v1748953611763!5m2!1sar!2s"
                                         width="100%"
                                         height="100%"
                                         style={{ border: 0 }}
@@ -552,17 +578,17 @@ export default function Contact() {
                                 >
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <MapPin className="w-4 h-4 text-primary" />
-                                        <p>123 Business Street, London, UK</p>
+                                        <p>1 Lochside View, Edinburgh EH12 9DH</p>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <Clock className="w-4 h-4 text-primary" />
-                                        <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+                                        <p>Mon - Fri: 8:00 AM - 6:00 PM | Sat - Sun: 9:00 AM - 4:00 PM</p>
                                     </div>
                                 </motion.div>
                             </div>
 
                             {/* Social Links */}
-                            <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-primary/10 shadow-lg">
+                            {/* <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-primary/10 shadow-lg">
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
@@ -598,7 +624,7 @@ export default function Contact() {
                                         </motion.a>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
                         </motion.div>
                     </div>
                 </div>
@@ -606,14 +632,21 @@ export default function Contact() {
 
             {/* Floating WhatsApp Button */}
             <motion.a
-                href="https://wa.me/441231234567"
+                href="https://wa.me/4777307883811 "
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-300 z-50"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
             >
-                <MessageCircle className="w-6 h-6" />
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="currentColor" 
+                    className="w-6 h-6"
+                >
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
             </motion.a>
 
             {/* Success Dialog */}

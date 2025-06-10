@@ -121,7 +121,7 @@ const Navbar = () => {
               variant="outline"
             />
             <IconButton
-              href={'/booking/create'}
+              href={'/book'}
               icon={Calendar}
               label="Book Cleaner"
             />
@@ -181,14 +181,14 @@ const Navbar = () => {
                     />
                     <IconButton
                       icon={Calendar}
-                      href={'/booking/create'}
+                      href={'/book'}
                       label="Book Cleaner"
                       className="w-full justify-center"
                     />
                   </div>
                 </div>
 
-                  <div className="border-b border-gray-200 my-4"></div>
+                  {/* <div className="border-b border-gray-200 my-4"></div>
                   <div className="px-4">
                     <h3 className="text-sm font-semibold text-gray-900 mb-3">Follow Us</h3>
                     <div className="flex space-x-4">
@@ -208,18 +208,19 @@ const Navbar = () => {
                         </svg>
                       </a>
                     </div>
-                  </div>
+                  </div> */}
+                  <div className="border-b border-gray-200 my-4"></div>
                 <div className="mt-auto">
-
-
                   <div className="border-t border-gray-200 my-4"></div>
+
+
 
                   <div className="px-4 pb-6">
                     <h3 className="text-sm font-semibold text-gray-900 mb-3">Contact Info</h3>
                     <div className="space-y-2 text-sm text-gray-600">
-                      <p>Email: info@uniongate.com</p>
-                      <p>Phone: +1 (555) 123-4567</p>
-                      <p>Address: 123 Business St, City, Country</p>
+                      <p>Email: info@uniongate.uk</p>
+                      <p>Phone: +477 730 788 3811 </p>
+                      <p>Address: 1 Lochside View, Edinburgh EH12 9DH</p>
                     </div>
                   </div>
                 </div>

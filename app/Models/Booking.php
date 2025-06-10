@@ -17,6 +17,18 @@ class Booking extends Model
     const STATUS_COMPLETED = 'completed';
     const STATUS_CANCELLED = 'cancelled';
 
+    protected $attributes = [
+        'base_amount' => 0,
+        'discount_amount' => 0,
+        'frequency_discount' => 0,
+        'bulk_discount' => 0,
+        'coupon_discount' => 0,
+        'special_period_adjustment' => 0,
+        'final_amount' => 0,
+        'frequency' => 'one_time',
+        'status' => 'pending',
+    ];
+
     protected $fillable = [
         'service_id',
         'coupon_id',
@@ -26,6 +38,7 @@ class Booking extends Model
         'customer_phone',
         'customer_address',
         'booking_date',
+        'booking_time',
         'duration_hours',
         'base_amount',
         'discount_amount',
@@ -73,6 +86,11 @@ class Booking extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function serviceOptions()
+    {
+        return $this->hasMany(BookingServiceOption::class);
     }
 
     public function coupon()

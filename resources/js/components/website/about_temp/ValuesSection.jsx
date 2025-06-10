@@ -51,16 +51,6 @@ export default function ValuesSection() {
                         opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.2, 0]),
                     }}
                 />
-                <div className="absolute inset-0" style={{
-                    backgroundImage: "radial-gradient(circle at center, var(--primary) 0.5px, transparent 0.5px)",
-                    backgroundSize: "24px 24px",
-                }}>
-                    <motion.div
-                        className="absolute inset-0"
-                        animate={{ y: [0, 24, 0] }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    />
-                </div>
             </div>
 
             <div className="container mx-auto px-4 relative">
@@ -95,55 +85,103 @@ export default function ValuesSection() {
                     </motion.p>
                 </motion.div>
 
-                {/* Values Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {values.map((value, index) => (
+                {/* Split Layout */}
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    {/* Left Column - Image */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        className="relative h-[600px] rounded-2xl overflow-hidden group"
+                    >
                         <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="group relative"
+                            className="absolute inset-0"
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.3 }}
                         >
-                            {/* Card */}
-                            <motion.div
-                                whileHover={{ y: -10 }}
-                                className="relative bg-card/50 backdrop-blur-xl p-8 rounded-2xl border border-primary/10 overflow-hidden"
-                            >
-                                {/* Background Gradient */}
-                                <div className={`absolute inset-0 bg-gradient-to-br ${value.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`} />
+                            <img
+                                src="/images/hero3.jpeg"
+                                alt="Professional Cleaning Service"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        </motion.div>
 
-                                {/* Icon */}
+                        {/* Floating Stats */}
+                        <div className="absolute bottom-8 left-8 right-8 grid grid-cols-2 gap-4">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                                className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20"
+                            >
+                                <div className="text-3xl font-bold text-white mb-1">500+</div>
+                                <div className="text-white/80">Happy Clients</div>
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 }}
+                                className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20"
+                            >
+                                <div className="text-3xl font-bold text-white mb-1">5.0</div>
+                                <div className="text-white/80">Service Rating</div>
+                            </motion.div>
+                        </div>
+                    </motion.div>
+
+                    {/* Right Column - Values */}
+                    <div className="grid grid-cols-1 gap-6">
+                        {values.map((value, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="group relative"
+                            >
                                 <motion.div
-                                    whileHover={{ scale: 1.1, rotate: 360 }}
-                                    className={`w-16 h-16 rounded-xl bg-card flex items-center justify-center mb-6 ${value.iconColor} group-hover:bg-white/10 transition-colors duration-300`}
+                                    whileHover={{ x: 10 }}
+                                    className="relative bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-primary/10 overflow-hidden"
                                 >
-                                    <value.icon className="w-8 h-8" />
+                                    <div className="flex items-start gap-6">
+                                        {/* Icon */}
+                                        <motion.div
+                                            whileHover={{ scale: 1.1, rotate: 360 }}
+                                            className={`w-14 h-14 rounded-xl bg-card flex items-center justify-center shrink-0 ${value.iconColor} group-hover:bg-white/10 transition-colors duration-300`}
+                                        >
+                                            <value.icon className="w-7 h-7" />
+                                        </motion.div>
+
+                                        {/* Content */}
+                                        <div>
+                                            <h3 className="text-2xl font-semibold mb-2">{value.title}</h3>
+                                            <p className="text-muted-foreground">{value.description}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Hover Effect */}
+                                    <motion.div
+                                        className="absolute inset-0 rounded-2xl"
+                                        initial={false}
+                                        whileHover={{
+                                            boxShadow: "0 0 30px rgba(var(--primary), 0.2)",
+                                        }}
+                                    />
                                 </motion.div>
 
-                                {/* Content */}
-                                <h3 className="text-2xl font-semibold mb-4">{value.title}</h3>
-                                <p className="text-muted-foreground">{value.description}</p>
-
-                                {/* Hover Effect */}
-                                <motion.div
-                                    className="absolute inset-0 rounded-2xl"
-                                    initial={false}
-                                    whileHover={{
-                                        boxShadow: "0 0 30px rgba(var(--primary), 0.2)",
-                                    }}
-                                />
+                                {/* Decorative Elements */}
+                                <div className="absolute -inset-4 -z-10">
+                                    <motion.div
+                                        className={`absolute inset-0 bg-gradient-to-r ${value.color} rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
+                                    />
+                                </div>
                             </motion.div>
-
-                            {/* Decorative Elements */}
-                            <div className="absolute -inset-4 -z-10">
-                                <motion.div
-                                    className={`absolute inset-0 bg-gradient-to-r ${value.color} rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
-                                />
-                            </div>
-                        </motion.div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

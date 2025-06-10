@@ -18,28 +18,124 @@ import {
     BarChart,
     CheckCheck,
     Calendar,
-    LucidePoundSterling
+    LucidePoundSterling,
+    Layers,
+    Send,
+    RefreshCw,
+    MessageSquare
 } from "lucide-react";
 
 import WebsiteLayout from '@/Layouts/WebsiteLayout';
 import { Head } from '@inertiajs/react';
-import { Link, usePage } from "@inertiajs/react";
-import { useState } from 'react';
-import { motion, AnimatePresence } from "framer-motion";
+import { Link, usePage, router } from "@inertiajs/react";
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+
+// Add this before the ServiceDetail component
+const testimonialFormSchema = z.object({
+    customer_name: z.string().min(2, "Name must be at least 2 characters"),
+    customer_email: z.string().email("Invalid email address"),
+    comment: z.string().min(10, "Comment must be at least 10 characters"),
+    rating: z.number().min(1).max(5),
+});
+
+const defaultTestimonialValues = {
+    customer_name: "",
+    customer_email: "",
+    comment: "",
+    rating: 5,
+};
+
+// Rating feedback messages
+const ratingFeedback = {
+    1: { emoji: "😞", text: "Very Dissatisfied" },
+    2: { emoji: "😕", text: "Dissatisfied" },
+    3: { emoji: "😐", text: "Neutral" },
+    4: { emoji: "😊", text: "Satisfied" },
+    5: { emoji: "😍", text: "Very Satisfied" }
+};
+
+// Modern Star Rating Component
+const StarRating = ({ value, onChange, size = "large" }) => {
+    const [hover, setHover] = useState(null);
+    const sizeClasses = {
+        small: "h-4 w-4",
+        default: "h-6 w-6",
+        large: "h-8 w-8"
+    };
+
+    return (
+        <div className="flex flex-col items-center gap-4">
+            <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                        key={star}
+                        type="button"
+                        onClick={() => onChange(star)}
+                        onMouseEnter={() => setHover(star)}
+                        onMouseLeave={() => setHover(null)}
+                        className="focus:outline-none transition-all duration-200 hover:scale-110"
+                    >
+                        <Star
+                            className={`${sizeClasses[size]} ${
+                                star <= (hover || value)
+                                    ? "text-yellow-500 fill-yellow-500"
+                                    : "text-gray-300"
+                            }`}
+                        />
+                    </button>
+                ))}
+            </div>
+            {(hover || value) && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center"
+                >
+                    <span className="text-4xl">{ratingFeedback[hover || value].emoji}</span>
+                    <p className="text-lg font-medium text-muted-foreground mt-2">
+                        {ratingFeedback[hover || value].text}
+                    </p>
+                </motion.div>
+            )}
+        </div>
+    );
+};
 
 export default function ServiceDetail({ service, category , relatedServices = [], testimonials = [] }) {
     // Debug logs to understand the data structure
-    console.log('Category:', category);
-    console.log('Service:', service);
+
 
     // Early return if data is missing
     if (!category || !service) {
@@ -67,19 +163,18 @@ export default function ServiceDetail({ service, category , relatedServices = []
     const displayPrice = hourlyRate > basePrice ? hourlyRate : basePrice;
 
 
-    const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.com';
+    const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.uk';
 
     // Filter related services from the same category, excluding current service
     const filteredRelatedServices = (relatedServices || [])
         .filter(s => s?.id !== service?.id)
         .map(s => ({
             ...s,
-            price: category.hourly_rate > s.base_price ? s.base_price:category.hourly_rate
+            // price: category.hourly_rate > s.base_price ? s.base_price:category.hourly_rate
         }))
         .slice(0, 3);
 
-        console.log(filteredRelatedServices);
-        
+    
 
     // Get first 3 testimonials
     const displayedTestimonials = (testimonials || []).slice(0, 3);
@@ -88,6 +183,38 @@ export default function ServiceDetail({ service, category , relatedServices = []
         setImageError(true);
     };
 
+    const ref = useRef(null);
+    const isInView = useInView(ref, { 
+        once: true, 
+        margin: "-50px 0px",
+        amount: 0.1
+    });
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.2,
+                duration: 0.45
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 40, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                type: "spring",
+                stiffness: 70,
+                damping: 17,
+                duration: 0.45
+            }
+        }
+    };
 
     const structuredData = {
         "@context": "https://schema.org",
@@ -102,31 +229,22 @@ export default function ServiceDetail({ service, category , relatedServices = []
             "image": `${baseUrl}/images/logo.png`,
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "Your Street Address",
-                "addressLocality": "Your City",
-                "addressRegion": "Your State",
-                "postalCode": "Your Postal Code",
-                "addressCountry": "Your Country"
+                "streetAddress": "1 Lochside View",
+                "addressLocality": "Edinburgh",
+                "addressRegion": "Scotland",
+                "postalCode": "EH12 9DH",
+                "addressCountry": "United Kingdom"
             },
-            "telephone": "+1234567890",
-            "priceRange": "$$",
+            "telephone": "+477 730 788 3811",
+            "email": "info@uniongate.uk",
             "url": baseUrl
-        },
-        "offers": {
-            "@type": "Offer",
-            "price": displayPrice,
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock",
-            "validFrom": new Date().toISOString(),
-            "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-            "url": `${baseUrl}/our-services/${category.slug}/${service.slug}`
         },
         "areaServed": {
             "@type": "GeoCircle",
             "geoMidpoint": {
                 "@type": "GeoCoordinates",
-                "latitude": "YOUR_LATITUDE",
-                "longitude": "YOUR_LONGITUDE"
+                "latitude": "55.9361427",
+                "longitude": "-3.3185184"
             },
             "geoRadius": "50000"
         },
@@ -150,18 +268,78 @@ export default function ServiceDetail({ service, category , relatedServices = []
             },
             "author": {
                 "@type": "Person",
-                "name": testimonial.customer_name || 'Anonymous'
+                "name": testimonial.name || 'Anonymous'
             },
             "reviewBody": testimonial.comment || '',
             "datePublished": testimonial.created_at || new Date().toISOString()
         })),
-        "duration": `PT${service.duration_minutes || 60}M`,
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "4.8",
+            "ratingValue": "5",
             "reviewCount": displayedTestimonials.length.toString()
         }
     };
+
+    // Add these new states for the two-step form
+    const [currentStep, setCurrentStep] = useState(1);
+    const [isSubmittingTestimonial, setIsSubmittingTestimonial] = useState(false);
+    const [hasSubmittedTestimonial, setHasSubmittedTestimonial] = useState(false);
+    const testimonialForm = useForm({
+        resolver: zodResolver(testimonialFormSchema),
+        defaultValues: defaultTestimonialValues,
+    });
+
+    // Check if user has already submitted a testimonial
+    useEffect(() => {
+        const hasSubmitted = localStorage.getItem(`testimonial_submitted_${service.id}`);
+        if (hasSubmitted) {
+            setHasSubmittedTestimonial(true);
+        }
+    }, [service.id]);
+
+    // Calculate average rating
+    const averageRating = testimonials.length > 0
+        ? (testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1)
+        : 0;
+
+    // Get rating distribution
+    const ratingDistribution = testimonials.reduce((acc, t) => {
+        acc[t.rating] = (acc[t.rating] || 0) + 1;
+        return acc;
+    }, {});
+
+    const onSubmitTestimonial = async (data) => {
+        setIsSubmittingTestimonial(true);
+        try {
+            router.post("/admin/testimonials", {
+                ...data,
+                // service_id: service.id,
+                is_approved: false,
+                is_featured: false,
+            }, {
+                onSuccess: () => {
+                    // Store in localStorage that user has submitted a testimonial
+                    localStorage.setItem(`testimonial_submitted_${service.id}`, 'true');
+                    setHasSubmittedTestimonial(true);
+                    toast.success("Thank you for your testimonial! It will be reviewed and published soon.");
+                    testimonialForm.reset(defaultTestimonialValues);
+                    setCurrentStep(1);
+                },
+                onError: (errors) => {
+                    toast.error(errors.message || "Something went wrong");
+                },
+                onFinish: () => {
+                    setIsSubmittingTestimonial(false);
+                }
+            });
+        } catch (error) {
+            toast.error("Something went wrong");
+            setIsSubmittingTestimonial(false);
+        }
+    };
+
+    // Add this new function to reset the submission status
+  
 
     return (
         <WebsiteLayout
@@ -209,22 +387,32 @@ export default function ServiceDetail({ service, category , relatedServices = []
                                 {service.description}
                             </p>
                             <div className="flex items-center gap-6 mb-8">
-                                <div className="flex items-center gap-2">
+                                {/* <div className="flex items-center gap-2">
                                     <PoundSterling className="h-5 w-5 text-primary" aria-hidden="true" />
-                                    <span className="text-lg font-semibold">{displayPrice}/hr</span>
-                                </div>
-                                <div className="flex items-center gap-2">
+                                    <span className="text-lg font-semibold">{service.formatted_text}</span>
+                                </div> */}
+                                {service.options && service.options.length > 0 && (
+                                    <div className="mt-4 space-y-2">
+                                        {service.options.map((option) => (
+                                            <div key={option.id} className="flex items-center gap-2">
+                                                <PoundSterling className="h-4 w-4 text-primary" />
+                                                <span className="text-sm text-muted-foreground">{option.formatted_text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {/* <div className="flex items-center gap-2">
                                     <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
                                     <span className="text-lg">{service.duration}</span>
-                                </div>
-                                {service.badge && (
+                                </div> */}
+                                {/* {service.badge && (
                                     <Badge variant="secondary" className="text-base px-4 py-1">
                                         {service.badge}
                                     </Badge>
-                                )}
+                                )} */}
                             </div>
                             <Link
-                                href={`/booking/create?service_id=${service.id}`}
+                                href={`/book/${service.id}`}
                             >
                                 <Button
                                     size="lg"
@@ -507,8 +695,7 @@ export default function ServiceDetail({ service, category , relatedServices = []
                     </div>
                 </motion.div>
 
-                {/* Testimonials */}
-                {displayedTestimonials.length > 0 && (
+                {/* Testimonial Section */}
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -516,41 +703,285 @@ export default function ServiceDetail({ service, category , relatedServices = []
                         transition={{ duration: 0.6 }}
                         className="mt-24 container mx-auto"
                     >
-                        <div className="flex items-center gap-3 mb-12 ">
+                    <div className="grid md:grid-cols-2 gap-12">
+                        {/* Left Column - Social Proof */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-3 mb-6">
                             <Star className="h-6 w-6 text-primary" aria-hidden="true" />
-                            <h2 className="text-2xl font-bold">Client Testimonials</h2>
+                                <h2 className="text-2xl font-bold">Customer Reviews</h2>
                         </div>
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {displayedTestimonials.map((testimonial, index) => (
-                                <motion.div
-                                    key={testimonial.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="relative group"
-                                >
-                                    <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-2xl transition-all duration-300 group-hover:bg-primary/10" />
-                                    <div className="relative bg-background/50 backdrop-blur-sm border border-primary/10 rounded-2xl p-6">
-                                        <div className="flex gap-1 mb-4" role="img" aria-label={`${testimonial.rating} out of 5 stars`}>
-                                            {[...Array(testimonial.rating)].map((_, i) => (
-                                                <Star key={i} className="h-5 w-5 text-yellow-500 fill-yellow-500" aria-hidden="true" />
+                            
+                            {/* Overall Rating */}
+                            <div className="bg-background/50 backdrop-blur-sm border border-primary/10 rounded-2xl p-6">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="text-4xl font-bold">{averageRating}</div>
+                                    <div>
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <Star
+                                                    key={star}
+                                                    className={`h-5 w-5 ${
+                                                        star <= averageRating
+                                                            ? "text-yellow-500 fill-yellow-500"
+                                                            : "text-gray-300"
+                                                    }`}
+                                                />
                                             ))}
                                         </div>
-                                        <blockquote className="text-muted-foreground mb-4">"{testimonial.comment}"</blockquote>
-                                        <div>
-                                            <div className="font-semibold">{testimonial.name}</div>
-                                            <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                                        </div>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            Based on {testimonials.length} reviews
+                                        </p>
                                     </div>
+                                </div>
+
+                                {/* Rating Distribution */}
+                                <div className="space-y-2">
+                                    {[5, 4, 3, 2, 1].map((rating) => (
+                                        <div key={rating} className="flex items-center gap-2">
+                                            <span className="text-sm w-8">{rating} ★</span>
+                                            <Progress
+                                                value={(ratingDistribution[rating] || 0) / testimonials.length * 100}
+                                                className="h-2"
+                                            />
+                                            <span className="text-sm text-muted-foreground w-12">
+                                                {ratingDistribution[rating] || 0}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Recent Testimonials Preview */}
+                            {testimonials.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold">Recent Reviews</h3>
+                                    {testimonials.slice(0, 2).map((testimonial) => (
+                                        <div
+                                    key={testimonial.id}
+                                            className="bg-background/50 backdrop-blur-sm border border-primary/10 rounded-xl p-4"
+                                        >
+                                            <div className="flex gap-1 mb-2">
+                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                                    <Star key={i} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                            ))}
+                                        </div>
+                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                                "{testimonial.comment}"
+                                            </p>
+                                            <p className="text-sm font-medium mt-2">{testimonial.name}</p>
+                                        </div>
+                                    ))}
+                                    </div>
+                            )}
+                        </div>
+
+                        {/* Right Column - Review Form */}
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background/50 rounded-3xl blur-2xl" />
+                            <Card className="relative bg-background/50 backdrop-blur-sm border-primary/10">
+                                <CardContent className="pt-6">
+                                    {hasSubmittedTestimonial ? (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="py-8"
+                                        >
+                                            <div className="text-center mb-8">
+                                                <div className="relative w-20 h-20 mx-auto mb-6">
+                                                    <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse" />
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <CheckCircle2 className="h-10 w-10 text-primary" />
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-2xl font-semibold mb-3">Thank You for Your Review!</h3>
+                                                <p className="text-muted-foreground max-w-md mx-auto">
+                                                    Your feedback is valuable to us and helps improve our services.
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-4 mb-8">
+                                                <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-xl">
+                                                    <Clock className="h-5 w-5 text-primary mt-1" />
+                                                    <div>
+                                                        <h4 className="font-medium mb-1">What's Next?</h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Your review will be reviewed by our team within 24-48 hours.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-xl">
+                                                    <Shield className="h-5 w-5 text-primary mt-1" />
+                                                    <div>
+                                                        <h4 className="font-medium mb-1">Quality Check</h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            We verify all reviews to maintain the quality of our feedback system.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-xl">
+                                                    <MessageSquare className="h-5 w-5 text-primary mt-1" />
+                                                    <div>
+                                                        <h4 className="font-medium mb-1">Stay Updated</h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            You'll receive an email when your review is published.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                           
+                                        </motion.div>
+                                    ) : (
+                                        <Form {...testimonialForm}>
+                                            <form onSubmit={testimonialForm.handleSubmit(onSubmitTestimonial)} className="space-y-6">
+                                                {/* Step Indicator */}
+                                                <div className="flex items-center justify-between mb-8">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                                            currentStep === 1 ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                                                        }`}>
+                                                            1
+                                                        </div>
+                                                        <span className={currentStep === 1 ? "font-medium" : "text-muted-foreground"}>
+                                                            Rate & Review
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-[2px] flex-1 bg-primary/10 mx-4" />
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                                            currentStep === 2 ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                                                        }`}>
+                                                            2
+                                                        </div>
+                                                        <span className={currentStep === 2 ? "font-medium" : "text-muted-foreground"}>
+                                                            Additional Details
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <AnimatePresence mode="wait">
+                                                    {currentStep === 1 ? (
+                                                        <motion.div
+                                                            key="step1"
+                                                            initial={{ opacity: 0, x: 20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            exit={{ opacity: 0, x: -20 }}
+                                                            className="space-y-6"
+                                                        >
+                                                            <FormField
+                                                                control={testimonialForm.control}
+                                                                name="rating"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel className="text-lg">How would you rate your experience?</FormLabel>
+                                                                        <FormControl>
+                                                                            <StarRating
+                                                                                value={field.value}
+                                                                                onChange={field.onChange}
+                                                                            />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <FormField
+                                                                control={testimonialForm.control}
+                                                                name="comment"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Share your experience (optional)</FormLabel>
+                                                                        <FormControl>
+                                                                            <Textarea
+                                                                                placeholder="Tell others about your experience..."
+                                                                                className="min-h-[120px]"
+                                                                                {...field}
+                                                                            />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                className="w-full"
+                                                                onClick={() => setCurrentStep(2)}
+                                                            >
+                                                                Continue
+                                                                <ChevronRight className="ml-2 h-4 w-4" />
+                                                            </Button>
                                 </motion.div>
-                            ))}
+                                                    ) : (
+                                                        <motion.div
+                                                            key="step2"
+                                                            initial={{ opacity: 0, x: 20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            exit={{ opacity: 0, x: -20 }}
+                                                            className="space-y-6"
+                                                        >
+                                                            <FormField
+                                                                control={testimonialForm.control}
+                                                                name="customer_name"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Your Name</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input placeholder="Enter your name" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <FormField
+                                                                control={testimonialForm.control}
+                                                                name="customer_email"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Your Email</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input placeholder="Enter your email" type="email" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <div className="flex gap-4">
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    className="flex-1"
+                                                                    onClick={() => setCurrentStep(1)}
+                                                                >
+                                                                    Back
+                                                                </Button>
+                                                                <Button
+                                                                    type="submit"
+                                                                    className="flex-1"
+                                                                    disabled={isSubmittingTestimonial}
+                                                                >
+                                                                    {isSubmittingTestimonial ? (
+                                                                        "Submitting..."
+                                                                    ) : (
+                                                                        <>
+                                                                            Submit Review
+                                                                            <Send className="ml-2 h-4 w-4" />
+                                                                        </>
+                                                                    )}
+                                                                </Button>
                         </div>
                     </motion.div>
                 )}
+                                                </AnimatePresence>
+                                            </form>
+                                        </Form>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </motion.div>
 
                 {/* Related Services */}
-                {filteredRelatedServices.length > 0 && (
+                {filteredRelatedServices && filteredRelatedServices.length > 0 && (
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -560,7 +991,7 @@ export default function ServiceDetail({ service, category , relatedServices = []
                     >
                         <div className="flex items-center justify-between mb-12">
                             <div className="flex items-center gap-3">
-                                <Users className="h-6 w-6 text-primary" aria-hidden="true" />
+                                <Layers className="h-6 w-6 text-primary" aria-hidden="true" />
                                 <h2 className="text-2xl font-bold">Related Services</h2>
                             </div>
                             <Link 
@@ -571,56 +1002,61 @@ export default function ServiceDetail({ service, category , relatedServices = []
                                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
                             </Link>
                         </div>
-                        <div className="grid md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {filteredRelatedServices.map((relatedService, index) => (
-                                <motion.div
+                                <div
                                     key={relatedService.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
-                                    transition={{ delay: index * 0.1 }}
                                     className="relative group"
                                 >
                                     <Link 
                                         href={`/our-services/${category.slug}/${relatedService.slug}`}
                                         className="block h-full"
                                     >
-                                        <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-2xl transition-all duration-300 group-hover:bg-primary/10" />
-                                        <div className="relative bg-background/50 backdrop-blur-sm border border-primary/10 rounded-2xl transition-all duration-300 hover:border-primary/30 h-full flex flex-col">
-                                            {relatedService.image_url && (
-                                                <div className="relative w-full aspect-[16/9] mb-4 rounded-t-xl overflow-hidden">
-                                                    <img 
-                                                        src={relatedService.image_url} 
-                                                        alt={relatedService.title}
-                                                        className="absolute inset-0 w-full h-full object-cover"
-                                                        onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            e.target.src = '/images/placeholder.jpg';
-                                                        }}
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                        <Card className="h-full relative overflow-hidden border-2 hover:border-primary/20 transition-all duration-300 group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            <CardHeader className="!p-0">
+                                                {relatedService.image_url && (
+                                                    <div className="relative w-full aspect-[16/9] mb-4 rounded-t-xl overflow-hidden">
+                                                        <img 
+                                                            src={relatedService.image_url} 
+                                                            alt={relatedService.title}
+                                                            className="absolute inset-0 w-full h-full object-cover"
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                                    </div>
+                                                )}
+                                                <div className="flex items-center gap-4 px-6 py-2">
+                                                    <div>
+                                                        <CardTitle className="text-xl font-bold">{relatedService.title}</CardTitle>
+                                                    </div>
                                                 </div>
-                                            )}
-                                            
-                                            <div className="p-6">
-                                                <h3 className="text-xl font-semibold mb-2">{relatedService.title}</h3>
-                                                <p className="text-muted-foreground mb-4 flex-grow">{relatedService.description}</p>
-                                                <div className="flex items-center justify-between mt-auto">
-                                                <div className="flex items-center gap-1">
-                                                <LucidePoundSterling className="h-4 w-4" />
-                                                <span>{relatedService.price}</span>
-                                            </div>
-                                                    <Link
-                                                        href={`/our-services/${category.slug}/${relatedService.slug}`}
-                                                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 text-primary/70 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 underline 90 h-10 px-4 py-2"
-                                                    >
-                                                        View Details
-                                                    </Link>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <CardDescription className="text-base whitespace-pre-line mb-4">
+                                                    {relatedService.description}
+                                                </CardDescription>
+                                                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                                                    <div className="flex flex-col gap-2">
+                                                        {relatedService.options && relatedService.options.length > 0 ? (
+                                                            relatedService.options.map((option) => (
+                                                                <div key={option.id} className="flex items-center gap-1.5 text-primary">
+                                                                    <PoundSterling className="h-4 w-4" />
+                                                                    <span className="font-medium">{option.formatted_text}</span>
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="flex items-center gap-1.5 text-primary">
+                                                                <PoundSterling className="h-4 w-4" />
+                                                                <span className="font-medium">From £{relatedService.price}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <ChevronRight className="h-5 w-5 text-primary transform group-hover:translate-x-1 transition-transform duration-300" />
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </CardContent>
+                                        </Card>
                                     </Link>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </motion.div>
@@ -642,7 +1078,7 @@ export default function ServiceDetail({ service, category , relatedServices = []
                                 <p className="text-lg mb-8 opacity-90">Take the first step towards transforming your business with our professional services.</p>
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                     <Link
-                                        href={`/booking/create?service_id=${service.id}`}
+                                        href={`/book/${service.id}`}
                                     >
                                         <Button 
                                             size="lg" 

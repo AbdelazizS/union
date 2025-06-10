@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Award, Trophy, Users, Star, Shield } from "lucide-react";
+import { Link } from "@inertiajs/react";
 
 export default function HeroSection() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -14,124 +15,150 @@ export default function HeroSection() {
         setMousePosition({ x, y });
     };
 
+    const scrollToVision = () => {
+        const visionSection = document.getElementById('vision-section');
+        if (visionSection) {
+            visionSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const stats = [
         {
             icon: Trophy,
-            value: "10+",
-            label: "Years Experience"
+            value: "2025",
+            label: "Founded"
         },
         {
             icon: Users,
-            value: "5000+",
-            label: "Happy Clients"
+            value: "40+",
+            label: "Active Clients"
         },
         {
             icon: Star,
-            value: "4.9",
-            label: "Customer Rating"
+            value: "5.0",
+            label: "Perfect Rating"
         },
         {
             icon: Shield,
             value: "100%",
-            label: "Satisfaction Rate"
+            label: "Quality Promise"
         }
     ];
 
     return (
         <section 
             onMouseMove={handleMouseMove}
-            className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden  bg-primary/5 z-10"
+            className="relative min-h-screen flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
+            style={{
+                backgroundImage: "url('/images/hero_2.jpeg')",
+            }}
         >
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-primary-5 ">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-            </div>
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
             {/* Content */}
-            <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center">
-                    {/* Badge */}
+            <div className="container mx-auto p-4 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    {/* Left Column */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="mb-8"
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="text-left"
                     >
                         <Badge 
                             variant="secondary" 
-                            className="px-6 py-2 text-lg backdrop-blur-md bg-primary/10 border border-primary/20"
+                            className="px-6 py-2 text-lg backdrop-blur-md bg-white/10 border border-white/20 text-white mb-8"
                         >
                             <Award className="w-5 h-5 mr-2" />
-                            Scotland's Premier Cleaning Service
+                            Next-Gen Cleaning Solutions
                         </Badge>
-                    </motion.div>
 
-                    {/* Title */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="relative"
-                    >
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 relative">
-                            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                                About Our Legacy
+                        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+                            Modern Cleaning, 
+                            <span className="block mt-2 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                                Future Standards
                             </span>
                         </h1>
+
+                        <p className="text-xl text-white/90 max-w-xl mb-8">
+                            Pioneering the future of cleaning services with innovative technology and sustainable practices. We're setting new standards in Scotland's cleaning industry with our fresh approach and commitment to excellence.
+                        </p>
+
+                        <div className="flex gap-4">
+                            <Link href="/book">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-8 py-3 bg-primary text-white rounded-lg font-semibold"
+                                >
+                                    Start Today
+                                </motion.button>
+                            </Link>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={scrollToVision}
+                                className="px-8 py-3 bg-white/10 text-white rounded-lg font-semibold backdrop-blur-md border border-white/20"
+                            >
+                                Our Vision
+                            </motion.button>
+                        </div>
                     </motion.div>
 
-                    {/* Description */}
-                    <motion.p 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                        className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-16"
+                    {/* Right Column - Stats */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="grid grid-cols-2 gap-6"
                     >
-                        Delivering exceptional cleaning services with professionalism, reliability, and attention to detail since 2008.
-                    </motion.p>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                                transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
                                 whileHover={{ scale: 1.05 }}
                                 className="relative group"
                             >
-                                <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
-                                <div className="relative bg-background/50 backdrop-blur-md rounded-2xl p-6 border border-primary/10">
+                                <div className="absolute inset-0 bg-white/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+                                <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                     <motion.div 
-                                        className="inline-flex p-4 rounded-xl bg-primary/10 text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                                        className="inline-flex p-4 rounded-xl bg-white/10 text-white mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300"
                                         whileHover={{ rotate: 360 }}
                                         transition={{ type: "spring", stiffness: 200, damping: 10 }}
                                     >
                                         <stat.icon className="w-6 h-6" />
                                     </motion.div>
                                     <motion.h3 
-                                        className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
-                                        animate={{
-                                            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                                        }}
-                                        transition={{
-                                            duration: 5,
-                                            repeat: Infinity,
-                                            ease: "linear",
-                                        }}
+                                        className="text-3xl font-bold mb-2 text-white"
                                     >
                                         {stat.value}
                                     </motion.h3>
-                                    <p className="text-muted-foreground">{stat.label}</p>
+                                    <p className="text-white/80">{stat.label}</p>
                                 </div>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </div>
 
             {/* Scroll Indicator */}
-            </section>
+            {/* <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 1 }}
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            >
+                <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                    <motion.div
+                        animate={{ y: [0, 12, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="w-1.5 h-1.5 bg-white rounded-full mt-2"
+                    />
+                </div>
+            </motion.div> */}
+        </section>
     );
 } 

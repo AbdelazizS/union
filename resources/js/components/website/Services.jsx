@@ -139,19 +139,28 @@ export default function Services({ services = [] }) {
                                         <CardDescription className="text-base whitespace-pre-line mb-4">
                                             {service.description}
                                         </CardDescription>
+                                        {/* {service.options && service.options.length > 0 && (
+                                            <div className="space-y-2 mb-4">
+                                                {service.options.map((option, idx) => (
+                                                    <div key={idx} className="text-sm text-muted-foreground">
+                                                        {option.formatted_text}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )} */}
                                         <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                                        <div className="flex items-center gap-4 text-sm">
-                                                            <div className="flex items-center gap-1.5 text-primary">
-                                                                <PoundSterling className="h-4 w-4" />
-                                                                <span className="font-medium">{service.price}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 text-primary">
-                                                                <Clock className="h-4 w-4" />
-                                                                <span className="font-medium">{service.duration}</span>
-                                                            </div>
-                                                        </div>
-                                                        <ChevronRight className="h-5 w-5 text-primary transform group-hover:translate-x-1 transition-transform duration-300" />
-                                                        </div>
+                                            <div className="flex items-center gap-4 text-sm">
+                                                <div className="flex items-center gap-1.5 text-primary">
+                                                    <PoundSterling className="h-4 w-4" />
+                                                    <span className="font-medium">From £{service.price}</span>
+                                                </div>
+                                                {/* <div className="flex items-center gap-1.5 text-primary">
+                                                    <Clock className="h-4 w-4" />
+                                                    <span className="font-medium">{service.duration}</span>
+                                                </div> */}
+                                            </div>
+                                            <ChevronRight className="h-5 w-5 text-primary transform group-hover:translate-x-1 transition-transform duration-300" />
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </Link>

@@ -16,14 +16,12 @@ class ServiceCategory extends Model
         'name',
         'slug',
         'description',
-        'hourly_rate',
         'icon',
         'is_active',
         'sort_order',
     ];
 
     protected $casts = [
-        'hourly_rate' => 'decimal:2',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];

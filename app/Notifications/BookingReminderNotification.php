@@ -33,7 +33,6 @@ class BookingReminderNotification extends Notification implements ShouldQueue
             ->line('Booking Details:')
             ->line('Service: ' . $this->booking->service->name)
             ->line('Date: ' . $this->booking->booking_date->format('F j, Y'))
-            ->line('Duration: ' . $this->booking->duration_hours . ' hours')
             ->line('Address: ' . $this->booking->customer_address)
             ->line('Please ensure someone will be available at the location during the service time.')
             ->action('View Booking Details', route('website.booking.confirmation', $this->booking))

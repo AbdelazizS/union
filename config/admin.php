@@ -10,5 +10,5 @@ return [
     |
     */
 
-    'allowed_email' => env('ADMIN_EMAIL', 'admin_1_2025@uniongate.uk'),
+    'allowed_email' => env('ADMIN_EMAIL', 'info@uniongate.uk'),
 ]; 
