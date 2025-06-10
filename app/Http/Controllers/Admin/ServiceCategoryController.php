@@ -12,7 +12,7 @@ class ServiceCategoryController extends Controller
 {
     public function index()
     {
-        $categories = ServiceCategory::latest()->get();
+        $categories = ServiceCategory::withCount('services')->latest()->get();
         return Inertia::render('Admin/ServiceCategories/index', [
             'serviceCategories' => $categories
         ]);
@@ -23,7 +23,6 @@ class ServiceCategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'hourly_rate' => 'required|numeric|min:0',
             'icon' => 'nullable|string',
             // 'sort_order' => 'required|integer|min:0',
             'is_active' => 'required|boolean',
@@ -41,7 +40,6 @@ class ServiceCategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'hourly_rate' => 'required|numeric|min:0',
             'icon' => 'nullable|string',
             // 'sort_order' => 'required|integer|min:0',
             'is_active' => 'required|boolean',
@@ -59,5 +57,31 @@ class ServiceCategoryController extends Controller
         $serviceCategory->delete();
 
         return redirect()->back()->with('success', 'Service category deleted successfully.');
+    }
+
+    public function show(ServiceCategory $serviceCategory)
+    {
+        $serviceCategory->load(['services' => function ($query) {
+            $query->withCount('bookings');
+        }]);
+
+        return response()->json([
+            'category' => [
+                'id' => $serviceCategory->id,
+                'name' => $serviceCategory->name,
+                'description' => $serviceCategory->description,
+                'is_active' => $serviceCategory->is_active,
+                'services_count' => $serviceCategory->services_count,
+                'services' => $serviceCategory->services->map(function ($service) {
+                    return [
+                        'id' => $service->id,
+                        'name' => $service->name,
+                        'description' => $service->description,
+                        'is_active' => $service->is_active,
+                        'bookings_count' => $service->bookings_count,
+                    ];
+                }),
+            ]
+        ]);
     }
 } 

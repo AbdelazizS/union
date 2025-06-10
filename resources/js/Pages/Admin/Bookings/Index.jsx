@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { toast } from "sonner";
 import { Calendar, Plus } from "lucide-react";
 import { format } from "date-fns";
-import { router } from "@inertiajs/react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -18,6 +17,7 @@ import {
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { columns, statuses } from "./columns";
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
+
 export default function BookingsIndex({ bookings, filters }) {
   const [selectedDateRange, setSelectedDateRange] = useState({
     from: filters.date_from ? new Date(filters.date_from) : undefined,
@@ -62,20 +62,15 @@ export default function BookingsIndex({ bookings, filters }) {
     );
   };
 
-  const handleStatusChange = async (id, action) => {
-    try {
-      await router.post(route(`admin.bookings.${action}`, id), null, {
+  const handleStatusChange = (bookingId, newStatus) => {
+    router.post(route(`admin.bookings.${newStatus}`, bookingId), {}, {
         onSuccess: () => {
-          toast.success(`Booking ${action}ed successfully`);
+        toast.success(`Booking ${newStatus}ed successfully`);
         },
-        onError: () => {
-          toast.error(`Failed to ${action} booking`);
+      onError: (errors) => {
+        toast.error(`Failed to ${newStatus} booking: ${errors.error}`);
         },
-        preserveScroll: true,
       });
-    } catch (error) {
-      toast.error(`An error occurred while ${action}ing the booking`);
-    }
   };
 
   const handleConfirmBooking = (id) => handleStatusChange(id, "confirm");
@@ -130,10 +125,10 @@ export default function BookingsIndex({ bookings, filters }) {
               ))}
             </SelectContent>
           </Select>
-          <DateRangePicker
+          {/* <DateRangePicker
             value={selectedDateRange}
             onChange={handleDateRangeChange}
-          />
+          /> */}
         </div>
       </div>
 

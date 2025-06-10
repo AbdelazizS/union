@@ -62,12 +62,7 @@ export default function BookingShow({ booking }) {
           <p className="text-muted-foreground">View booking details</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            onClick={() => router.visit(route("admin.bookings.edit", booking.id))}
-          >
-            Edit Booking
-          </Button>
+         
           {booking.status === "pending" && (
             <Button onClick={() => handleStatusChange("confirm")}>
               Confirm Booking
@@ -96,9 +91,9 @@ export default function BookingShow({ booking }) {
               <CardTitle>Service Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
+              <div className="space-y-2">
                 <h4 className="font-medium">Service</h4>
-                <p>{booking.service?.name || 'N/A'}</p>
+                <p>{booking.service?.name}</p>
               </div>
               <div>
                 <h4 className="font-medium">Category</h4>
@@ -113,10 +108,10 @@ export default function BookingShow({ booking }) {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium">Duration</h4>
+                  {/* <h4 className="font-medium">Duration</h4> */}
                   <div className="flex items-center text-muted-foreground">
-                    <Clock className="mr-2 h-4 w-4" />
-                    {booking.duration_hours ? `${booking.duration_hours} hours` : 'N/A'}
+                    {/* <Clock className="mr-2 h-4 w-4" /> */}
+                    {/* {booking.duration_hours ? `${booking.duration_hours} hours` : 'N/A'} */}
                   </div>
                 </div>
               </div>
@@ -204,19 +199,19 @@ export default function BookingShow({ booking }) {
                 {(booking.frequency_discount || 0) > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Frequency Discount:</span>
-                    <span>-${booking.frequency_discount}</span>
+                    <span>-£{booking.frequency_discount}</span>
                   </div>
                 )}
                 {(booking.bulk_discount || 0) > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Bulk Discount:</span>
-                    <span>-${booking.bulk_discount}</span>
+                    <span>-£{booking.bulk_discount}</span>
                   </div>
                 )}
                 {booking.coupon && (
                   <div className="flex justify-between text-green-600">
                     <span>Coupon ({booking.coupon.code}):</span>
-                    <span>-${booking.coupon_discount || 0}</span>
+                    <span>-£{booking.coupon_discount || 0}</span>
                   </div>
                 )}
                 {(booking.special_period_adjustment || 0) !== 0 && (
@@ -229,7 +224,7 @@ export default function BookingShow({ booking }) {
                           : "text-green-600"
                       }
                     >
-                      {booking.special_period_adjustment > 0 ? "+" : "-"}$
+                      {booking.special_period_adjustment > 0 ? "+" : "-"}£
                       {Math.abs(booking.special_period_adjustment)}
                     </span>
                   </div>
@@ -237,7 +232,7 @@ export default function BookingShow({ booking }) {
                 <Separator />
                 <div className="flex justify-between font-bold">
                   <span>Final Amount:</span>
-                  <span>${booking.final_amount || 0}</span>
+                  <span>£{booking.final_amount || 0}</span>
                 </div>
               </div>
             </CardContent>

@@ -28,6 +28,7 @@ class TestimonialController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'is_featured' => 'boolean',
             'is_approved' => 'boolean',
+            'service_id' => 'nullable|exists:services,id',
         ])->validate();
 
         Testimonial::create($validated);
@@ -44,6 +45,7 @@ class TestimonialController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'is_featured' => 'boolean',
             'is_approved' => 'boolean',
+            'service_id' => 'nullable|exists:services,id',
         ])->validate();
 
         $testimonial->update($validated);

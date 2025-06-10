@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('customer_phone');
             $table->text('customer_address');
             $table->datetime('booking_date');
-            $table->integer('duration_hours');
+            // $table->integer('duration_hours');
             $table->decimal('base_amount', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('frequency_discount', 10, 2)->default(0);

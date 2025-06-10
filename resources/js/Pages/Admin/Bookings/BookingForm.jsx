@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { router } from "@inertiajs/react";
 import { format, addDays } from "date-fns";
 import { CalendarIcon, Clock, Users } from "lucide-react";
+import PropTypes from 'prop-types';
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,110 +36,162 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const bookingFormSchema = z.object({
-  service_id: z.string().min(1, "Service is required"),
+const formSchema = z.object({
+  service_id: z.string().min(1, "Please select a service"),
+  selected_options: z.array(z.object({
+    option_id: z.string(),
+    quantity: z.number().min(1).optional(),
+  })).default([]),
   booking_date: z.date({
-    required_error: "Booking date is required",
-  }),
-  duration_hours: z.coerce.number().min(1, "Duration must be at least 1 hour"),
-  frequency: z.enum(["one_time", "weekly", "biweekly", "monthly"], {
-    required_error: "Please select a frequency",
+    required_error: "Please select a date",
   }),
   customer_name: z.string().min(2, "Name must be at least 2 characters"),
   customer_email: z.string().email("Invalid email address"),
   customer_phone: z.string().min(10, "Phone number must be at least 10 digits"),
   customer_address: z.string().min(5, "Address must be at least 5 characters"),
   notes: z.string().optional(),
-  coupon_code: z.string().optional(),
+  status: z.enum(["pending", "confirmed", "completed", "cancelled"]).default("pending"),
 });
 
-export function BookingForm({ services, initialData = null, isEdit = false }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [priceBreakdown, setPriceBreakdown] = useState(null);
-
+export function BookingForm({ 
+  onSubmit, 
+  initialData = null, 
+  isSubmitting = false,
+  services = [],
+  availableTimeSlots = [],
+}) {
   const form = useForm({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      service_id: initialData?.service_id ? String(initialData.service_id) : "",
-      booking_date: initialData?.booking_date ? new Date(initialData.booking_date) : new Date(),
-      duration_hours: initialData?.duration_hours || 1,
-      frequency: initialData?.frequency || "one_time",
-      customer_name: initialData?.customer_name || "",
-      customer_email: initialData?.customer_email || "",
-      customer_phone: initialData?.customer_phone || "",
-      customer_address: initialData?.customer_address || "",
-      notes: initialData?.notes || "",
-      coupon_code: initialData?.coupon?.code || "",
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData || {
+      service_id: "",
+      selected_options: [],
+      booking_date: undefined,
+      customer_name: "",
+      customer_email: "",
+      customer_phone: "",
+      customer_address: "",
+      notes: "",
+      status: "pending",
     },
   });
 
-  const calculatePrice = async (data) => {
-    try {
-      const response = await router.post(route("api.bookings.calculate-price"), data, {
-        preserveState: true,
-        preserveScroll: true,
-      });
-      setPriceBreakdown(response.data);
-    } catch (error) {
-      console.error("Error calculating price:", error);
-      toast.error("Failed to calculate price");
+  const selectedServiceId = form.watch("service_id");
+  const selectedOptions = form.watch("selected_options");
+
+  const selectedService = services.find(s => s.id.toString() === selectedServiceId);
+  const serviceOptions = selectedService?.options || [];
+
+  // Calculate total price based on selected options
+  const calculateTotalPrice = () => {
+    let total = 0;
+    
+    selectedOptions.forEach(selectedOption => {
+      const option = serviceOptions.find(opt => opt.id.toString() === selectedOption.option_id);
+      if (option) {
+        const price = parseFloat(option.price) || 0;
+        if (option.is_variable) {
+          const quantity = parseInt(selectedOption.quantity) || 1;
+          total += price * quantity;
+        } else {
+          total += price;
+        }
+      }
+    });
+
+    return total.toFixed(2);
+  };
+
+  const totalPrice = calculateTotalPrice();
+
+  // Reset selected options when service changes
+  useEffect(() => {
+    form.setValue("selected_options", []);
+  }, [selectedServiceId]);
+
+  const handleOptionChange = (optionId, checked) => {
+    const currentOptions = form.getValues("selected_options");
+    const option = serviceOptions.find(opt => opt.id.toString() === optionId);
+
+    if (checked) {
+      // Add option with default quantity if variable
+      form.setValue("selected_options", [
+        ...currentOptions,
+        {
+          option_id: optionId,
+          quantity: option?.is_variable ? 1 : undefined
+        }
+      ]);
+    } else {
+      // Remove option
+      form.setValue("selected_options", 
+        currentOptions.filter(opt => opt.option_id !== optionId)
+      );
     }
   };
 
-  const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    try {
-      const adjustedData = {
-        ...data,
-        booking_date: addDays(data.booking_date, 1)
-      };
+  const handleQuantityChange = (optionId, quantity) => {
+    const currentOptions = form.getValues("selected_options");
+    const updatedOptions = currentOptions.map(opt => 
+      opt.option_id === optionId 
+        ? { ...opt, quantity: Number(quantity) }
+        : opt
+    );
+    form.setValue("selected_options", updatedOptions);
+  };
 
-      if (isEdit) {
-        await router.patch(route("admin.bookings.update", initialData.id), adjustedData, {
-          onSuccess: () => {
-            toast.success("Booking updated successfully");
-            router.visit(route("admin.bookings.index"));
-          },
-          onError: (errors) => {
-            Object.keys(errors).forEach((key) => {
-              form.setError(key, { message: errors[key] });
-            });
-            toast.error("Please check the form for errors");
-          },
+  const handleSubmit = async (data) => {
+    try {
+      console.log('Submitting form data:', data);
+      
+      // Validate that at least one option is selected
+      if (data.selected_options.length === 0) {
+        form.setError('selected_options', {
+          type: 'manual',
+          message: 'Please select at least one service option'
         });
-      } else {
-        await router.post(route("admin.bookings.store"), adjustedData, {
-          onSuccess: () => {
-            toast.success("Booking created successfully");
-            router.visit(route("admin.bookings.index"));
-          },
-          onError: (errors) => {
-            Object.keys(errors).forEach((key) => {
-              form.setError(key, { message: errors[key] });
-            });
-            toast.error("Please check the form for errors");
-          },
-        });
+        return;
       }
+
+      // Validate quantities for variable options
+      const hasInvalidQuantity = data.selected_options.some(selectedOption => {
+        const option = serviceOptions.find(opt => opt.id.toString() === selectedOption.option_id);
+        if (option?.is_variable) {
+          const quantity = selectedOption.quantity || 1;
+          if (option.min_qty && quantity < option.min_qty) {
+            form.setError('selected_options', {
+              type: 'manual',
+              message: `Quantity for ${option.label} must be at least ${option.min_qty}`
+            });
+            return true;
+          }
+          if (option.max_qty && quantity > option.max_qty) {
+            form.setError('selected_options', {
+              type: 'manual',
+              message: `Quantity for ${option.label} cannot exceed ${option.max_qty}`
+            });
+            return true;
+          }
+        }
+        return false;
+      });
+
+      if (hasInvalidQuantity) {
+        return;
+      }
+
+      await onSubmit(data);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An error occurred while saving the booking");
-    } finally {
-      setIsSubmitting(false);
+      console.error('Form submission error:', error);
+      toast.error('Failed to submit booking. Please try again.');
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid gap-8 md:grid-cols-2">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-6">
-                <h3 className="text-lg font-medium">Service Details</h3>
-                <Separator />
-                
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="service_id"
@@ -156,7 +209,7 @@ export function BookingForm({ services, initialData = null, isEdit = false }) {
                         </FormControl>
                         <SelectContent>
                           {services.map((service) => (
-                            <SelectItem key={service.id} value={String(service.id)}>
+                      <SelectItem key={service.id} value={service.id.toString()}>
                               {service.name}
                             </SelectItem>
                           ))}
@@ -167,109 +220,113 @@ export function BookingForm({ services, initialData = null, isEdit = false }) {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="booking_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Booking Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          {selectedService && serviceOptions.length > 0 && (
+            <div className="col-span-2">
+              <FormLabel>Service Options</FormLabel>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                {serviceOptions.map((option) => {
+                  const isSelected = selectedOptions.some(opt => opt.option_id === option.id.toString());
+                  const selectedOption = selectedOptions.find(opt => opt.option_id === option.id.toString());
 
-                <FormField
-                  control={form.control}
-                  name="duration_hours"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Duration (hours)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={1}
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                  return (
+                    <div key={option.id} className="flex flex-col space-y-2 p-4 border rounded-lg">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={(checked) => handleOptionChange(option.id.toString(), checked)}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="frequency"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Frequency</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select frequency" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="one_time">One Time</SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                          <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <div className="space-y-1">
+                          <FormLabel>
+                            {option.label}
+                            {option.is_variable ? " (per unit)" : ""}
+                          </FormLabel>
+                          <p className="text-sm text-gray-500">
+                            £{Number(option.price).toFixed(2)}
+                            {option.note && ` - ${option.note}`}
+                          </p>
+                          {option.is_variable && isSelected && (
+                            <div className="mt-2">
+                              <FormLabel className="text-sm">Quantity</FormLabel>
+                              <Input
+                                type="number"
+                                min={option.min_qty || 1}
+                                max={option.max_qty}
+                                value={selectedOption?.quantity || 1}
+                                onChange={(e) => handleQuantityChange(option.id.toString(), e.target.value)}
+                                className="w-24"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          )}
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-6">
-                <h3 className="text-lg font-medium">Customer Information</h3>
-                <Separator />
+          <div className="col-span-2">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Total Price:</span>
+                  <span className="text-lg font-bold">
+                    {totalPrice === 'NaN' ? '£0.00' : `£${totalPrice}`}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="booking_date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Booking Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
                 <FormField
                   control={form.control}
                   name="customer_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                <FormLabel>Customer Name</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -283,7 +340,7 @@ export function BookingForm({ services, initialData = null, isEdit = false }) {
                   name="customer_email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                <FormLabel>Customer Email</FormLabel>
                       <FormControl>
                         <Input type="email" {...field} />
                       </FormControl>
@@ -297,7 +354,7 @@ export function BookingForm({ services, initialData = null, isEdit = false }) {
                   name="customer_phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                <FormLabel>Customer Phone</FormLabel>
                       <FormControl>
                         <Input type="tel" {...field} />
                       </FormControl>
@@ -310,133 +367,98 @@ export function BookingForm({ services, initialData = null, isEdit = false }) {
                   control={form.control}
                   name="customer_address"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
+                    <FormItem className="col-span-2">
+                      <FormLabel>Customer Address</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea
+                          placeholder="Enter customer's full address"
+                          className="resize-none"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              <h3 className="text-lg font-medium">Additional Information</h3>
-              <Separator />
 
               <FormField
                 control={form.control}
                 name="notes"
                 render={({ field }) => (
-                  <FormItem>
+              <FormItem className="col-span-2">
                     <FormLabel>Notes</FormLabel>
                     <FormControl>
-                      <Textarea {...field} />
+                  <Textarea
+                    placeholder="Any additional notes or requirements"
+                    className="resize-none"
+                    {...field}
+                  />
                     </FormControl>
-                    <FormDescription>
-                      Any special instructions or requirements
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+          {initialData && (
               <FormField
                 control={form.control}
-                name="coupon_code"
+              name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Coupon Code</FormLabel>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
-                      <Input {...field} />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
                     </FormControl>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-          </CardContent>
-        </Card>
-
-        {priceBreakdown && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Price Breakdown</h3>
-                <Separator />
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Base Price:</span>
-                    <span>${priceBreakdown.base_amount}</span>
-                  </div>
-                  {priceBreakdown.frequency_discount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Frequency Discount:</span>
-                      <span>-${priceBreakdown.frequency_discount}</span>
-                    </div>
-                  )}
-                  {priceBreakdown.bulk_discount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Bulk Discount:</span>
-                      <span>-${priceBreakdown.bulk_discount}</span>
-                    </div>
-                  )}
-                  {priceBreakdown.coupon_discount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Coupon Discount:</span>
-                      <span>-${priceBreakdown.coupon_discount}</span>
-                    </div>
-                  )}
-                  {priceBreakdown.special_period_adjustment !== 0 && (
-                    <div className="flex justify-between">
-                      <span>Special Period Adjustment:</span>
-                      <span className={cn(
-                        priceBreakdown.special_period_adjustment > 0 
-                          ? "text-red-600" 
-                          : "text-green-600"
-                      )}>
-                        {priceBreakdown.special_period_adjustment > 0 ? "+" : "-"}
-                        ${Math.abs(priceBreakdown.special_period_adjustment)}
-                      </span>
-                    </div>
-                  )}
-                  <Separator />
-                  <div className="flex justify-between font-bold">
-                    <span>Final Price:</span>
-                    <span>${priceBreakdown.final_amount}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="flex justify-end space-x-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.visit(route("admin.bookings.index"))}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Clock className="mr-2 h-4 w-4 animate-spin" />
-                {isEdit ? "Updating..." : "Creating..."}
-              </>
-            ) : (
-              isEdit ? "Update Booking" : "Create Booking"
-            )}
-          </Button>
+          )}
         </div>
+
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Saving..." : initialData ? "Update Booking" : "Create Booking"}
+        </Button>
       </form>
     </Form>
   );
 } 
+
+BookingForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  initialData: PropTypes.object,
+  isSubmitting: PropTypes.bool,
+  services: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    category: PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+    options: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      label: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      min_qty: PropTypes.number,
+      max_qty: PropTypes.number,
+      is_variable: PropTypes.bool,
+      note: PropTypes.string,
+      is_active: PropTypes.bool,
+    })),
+  })).isRequired,
+  availableTimeSlots: PropTypes.arrayOf(PropTypes.string),
+}; 
+

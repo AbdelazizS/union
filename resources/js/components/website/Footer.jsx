@@ -63,7 +63,7 @@ export default function Footer() {
                             Professional cleaning services for your home and business.
                             Quality, reliability, and satisfaction guaranteed.
                         </p>
-                        <div className="flex space-x-6">
+                        {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
                                 <a
                                     key={item.name}
@@ -74,7 +74,7 @@ export default function Footer() {
                                     <item.icon className="h-6 w-6" aria-hidden="true" />
                                 </a>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
                     <div className="mt-12 grid grid-cols-2 gap-12 xl:col-span-2 xl:mt-0">
                         <div className="md:grid md:grid-cols-2 md:gap-12">
@@ -109,41 +109,27 @@ export default function Footer() {
                                 </ul>
                             </div>
                         </div>
-                        <div className="md:grid md:grid-cols-2 md:gap-12">
-                            <div>
-                                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Support</h3>
-                                <ul className="mt-6 space-y-4">
-                                    {navigation.support.map((item) => (
-                                        <li key={item.name}>
-                                            <Link
-                                                href={item.href}
-                                                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                        <div className="md:grid md:grid-cols- col-span-full lg:col-span-1 md:gap-12">
+                     
                             <div className="mt-12 md:mt-0">
                                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Contact</h3>
                                 <ul className="mt-6 space-y-4">
                                     <li>
                                         <a
-                                            href="tel:+1234567890"
+                                            href="tel:+4777307883811"
                                             className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
                                         >
                                             <Phone className="h-5 w-5 mr-3" />
-                                            (123) 456-7890
+                                            +477 730 788 3811
                                         </a>
                                     </li>
                                     <li>
                                         <a
-                                            href="mailto:info@cleanpro.com"
+                                            href="mailto:info@uniongate.uk"
                                             className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
                                         >
                                             <Mail className="h-5 w-5 mr-3" />
-                                            info@cleanpro.com
+                                            info@uniongate.uk
                                         </a>
                                     </li>
                                     <li>
@@ -151,14 +137,15 @@ export default function Footer() {
                                             href="#"
                                             className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
                                         >
-                                            <MapPin className="h-5 w-5 mr-3" />
-                                            123 Cleaning Street, City, State 12345
+                                            <MapPin className="h-5 w-5  mr-3" />
+                                            1 Lochside View, Edinburgh EH12 9DH
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
+                            
                
                 </div>
             </div>

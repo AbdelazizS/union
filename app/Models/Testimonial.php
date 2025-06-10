@@ -16,7 +16,8 @@ class Testimonial extends Model
         'comment',
         'rating',
         'is_featured',
-        'is_approved'
+        'is_approved',
+        'service_id'
     ];
 
     protected $casts = [
@@ -28,6 +29,11 @@ class Testimonial extends Model
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 
     public function scopeApproved($query)

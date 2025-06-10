@@ -27,8 +27,8 @@
                     <p style="margin: 8px 0;"><strong style="color: #334155;">Booking Number:</strong> {{ $booking->booking_number }}</p>
                     <p style="margin: 8px 0;"><strong style="color: #334155;">Service:</strong> {{ $booking->service->name }}</p>
                     <p style="margin: 8px 0;"><strong style="color: #334155;">Date:</strong> {{ $booking->booking_date->format('F j, Y') }}</p>
-                    <p style="margin: 8px 0;"><strong style="color: #334155;">Duration:</strong> {{ $booking->duration_hours }} hours</p>
-                    <p style="margin: 8px 0;"><strong style="color: #334155;">Total Amount:</strong> ${{ number_format($booking->final_amount, 2) }}</p>
+                    <!-- <p style="margin: 8px 0;"><strong style="color: #334155;">Duration:</strong> {{ $booking->duration_hours }} hours</p> -->
+                    <p style="margin: 8px 0;"><strong style="color: #334155;">Total Amount:</strong> £{{ number_format($booking->final_amount, 2) }}</p>
                     @if($booking->coupon)
                         <p style="margin: 8px 0;"><strong style="color: #334155;">Coupon Applied:</strong> {{ $booking->coupon->code }}</p>
                     @endif

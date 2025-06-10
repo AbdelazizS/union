@@ -71,7 +71,7 @@ export default function CTASection() {
                         >
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Link
-                                    href={`/booking/create`}
+                                    href={`/book`}
                                 >
 
                                     <Button size="lg" variant="secondary" className="rounded-full group">

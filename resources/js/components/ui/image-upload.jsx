@@ -1,77 +1,71 @@
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { ImagePlus, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
+import { Image, Upload, X } from "lucide-react";
 
-export function ImageUpload({ value, onChange, disabled, className }) {
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          onChange(reader.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    [onChange]
-  );
+export function ImageUpload({ value, onChange, onRemove }) {
+  const [preview, setPreview] = useState(value);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setPreview(base64String);
+        onChange(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, [onChange]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp", ".tiff", ".ico"],
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
     },
     maxFiles: 1,
-    disabled,
+    multiple: false
   });
 
-  const handleRemove = (e) => {
-    e.stopPropagation();
-    onChange("");
-  };
-
   return (
-    <div
-      {...getRootProps()}
-      className={cn(
-        "relative border-2 border-dashed rounded-lg p-4 transition-colors",
-        isDragActive ? "border-primary" : "border-muted-foreground/25",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    >
-      <input {...getInputProps()} />
-      {value ? (
-        <div className="relative aspect-video">
+    <div className="space-y-4">
+      {preview ? (
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden">
           <img
-            src={value}
-            alt="Upload"
-            className="object-cover w-full h-full rounded-lg"
+            src={preview}
+            alt="Preview"
+            className="w-full h-full object-cover"
           />
-          {!disabled && (
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2"
-              onClick={handleRemove}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            type="button"
+            variant="destructive"
+            size="icon"
+            className="absolute top-2 right-2"
+            onClick={() => {
+              setPreview(null);
+              onRemove();
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-2 py-8 cursor-pointer">
-          <ImagePlus className="h-10 w-10 text-muted-foreground" />
-          <div className="text-sm text-muted-foreground text-center">
-            {isDragActive ? (
-              <p>Drop the image here</p>
-            ) : (
-              <p>Drag & drop an image, or click to select</p>
-            )}
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+            ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary'}`}
+        >
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center gap-2">
+            <Upload className="h-8 w-8 text-gray-400" />
+            <div className="text-sm text-gray-500">
+              {isDragActive ? (
+                <p>Drop the image here...</p>
+              ) : (
+                <p>Drag & drop an image here, or click to select</p>
+              )}
+            </div>
           </div>
         </div>
       )}

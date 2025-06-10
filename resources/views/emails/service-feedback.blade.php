@@ -31,10 +31,6 @@
             <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->booking_date->format('F j, Y') }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #64748b;">Duration:</td>
-            <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->duration_hours }} hours</td>
-        </tr>
-        <tr>
             <td style="padding: 8px 0; color: #64748b;">Location:</td>
             <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->customer_address }}</td>
         </tr>

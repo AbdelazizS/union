@@ -124,7 +124,7 @@ const About = () => {
               <CardContent className="p-0">
                 <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
                   <img
-                    src="/images/about-cleaning.jpg"
+                    src="/images/hero_2.jpeg"
                     alt="Professional cleaning team"
                     className="object-cover w-full h-full transform hover:scale-105 transition-transform duration-500"
                   />
@@ -196,7 +196,7 @@ const About = () => {
               whileTap={{ scale: 0.98 }}
             >
               <Link
-                href={`/booking/create`}
+                href={`/book`}
               >
 
                 <Button

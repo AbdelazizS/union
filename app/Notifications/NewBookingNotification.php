@@ -34,8 +34,7 @@ class NewBookingNotification extends Notification implements ShouldQueue
             ->line('Booking Number: ' . $this->booking->booking_number)
             ->line('Service: ' . $this->booking->service->name)
             ->line('Date: ' . $this->booking->booking_date->format('F j, Y'))
-            ->line('Duration: ' . $this->booking->duration_hours . ' hours')
-            ->line('Total Amount: $' . number_format($this->booking->final_amount, 2));
+            ->line('Total Amount: £' . number_format($this->booking->final_amount, 2));
 
         if ($this->booking->coupon) {
             $message->line('Applied Coupon: ' . $this->booking->coupon->code);

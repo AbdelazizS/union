@@ -11,13 +11,13 @@ const slides = [
         title: "Scotland's Trusted Cleaning Partner",
         subtitle: "Professional cleaning services for homes and businesses across Scotland",
         cta: "Book Cleaner",
-        ctaLink: "/booking/create",
+        ctaLink: "/book",
         secondaryCta: "Explore Services",
         secondaryCtaLink: "/our-services",
-        image: "/images/hero-cleaning.jpg",
+        image: "/images/hero_bg_1.webp",
         stats: [
-            { icon: Star, value: "4.9/5", label: "Customer Rating" },
-            { icon: Users, value: "500+", label: "Happy Clients" },
+            { icon: Star, value: "5/5", label: "Customer Rating" },
+            { icon: Users, value: "40+", label: "Happy Clients" },
             { icon: Shield, value: "100%", label: "Satisfaction" }
         ]
     },
@@ -26,13 +26,13 @@ const slides = [
         title: "Tailored Cleaning Solutions",
         subtitle: "Customized packages for homes, offices, and commercial spaces",
         cta: "Book Cleaner",
-        ctaLink: "/book-a-cleaner",
+        ctaLink: "/book",
         secondaryCta: "View Packages",
         secondaryCtaLink: "/our-services",
-        image: "/images/hero-cleaning.jpg",
+        image: "/images/hero_bg_1.webp",
         stats: [
-            { icon: Star, value: "15+", label: "Years Experience" },
-            { icon: Users, value: "1000+", label: "Projects Completed" },
+            { icon: Star, value: "1+", label: "Years Experience" },
+            { icon: Users, value: "40+", label: "Projects Completed" },
             { icon: Shield, value: "24/7", label: "Support" }
         ]
     },
@@ -41,12 +41,12 @@ const slides = [
         title: "Local Expertise, National Standards",
         subtitle: "Serving Scottish homes and businesses with professional cleaning excellence since 2008",
         cta: "Book Cleaner",
-        ctaLink: "/booking/create",
+        ctaLink: "/book",
         secondaryCta: "Contact Us",
         secondaryCtaLink: "/contact",
-        image: "/images/hero-cleaning.jpg",
+        image: "/images/hero_bg_1.webp",
         stats: [
-            { icon: Star, value: "50+", label: "Team Members" },
+            { icon: Star, value: "10+", label: "Team Members" },
             { icon: Users, value: "100%", label: "Eco-Friendly" },
             { icon: Shield, value: "5-Star", label: "Service" }
         ]
