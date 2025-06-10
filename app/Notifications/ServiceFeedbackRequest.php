@@ -34,10 +34,10 @@ class ServiceFeedbackRequest extends Notification implements ShouldQueue
             ->line('Service Details:')
             ->line('Service: ' . $this->booking->service->name)
             ->line('Date: ' . $this->booking->booking_date->format('F j, Y'))
-            ->action('Leave Your Feedback', route('website.feedback.create', [
-                'booking' => $this->booking,
-                'token' => encrypt($this->booking->id)
-            ]))
+            // ->action('Leave Your Feedback', route('website.feedback.create', [
+            //     'booking' => $this->booking,
+            //     'token' => encrypt($this->booking->id)
+            // ]))
             ->line('Your feedback helps us maintain our high standards and improve where needed.')
             ->line('Thank you for your time!');
     }

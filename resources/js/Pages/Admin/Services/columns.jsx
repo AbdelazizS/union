@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash, Eye } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, Eye, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,8 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { router } from "@inertiajs/react";
 
-export const columns = (handleEdit, handleDelete, handleView) => [
+export const columns = (handleEdit, handleDelete, handleToggleStatus, handleView) => [
   {
     accessorKey: "image",
     header: "Image",
@@ -34,24 +35,34 @@ export const columns = (handleEdit, handleDelete, handleView) => [
   {
     accessorKey: "category.name",
     header: "Category",
-    cell: ({ row }) => <div>{row.original.category?.name}</div>,
+    cell: ({ row }) => <div>{row.original.category?.name || '-'}</div>,
     enableSorting: true,
   },
   {
-    accessorKey: "base_price",
-    header: "Base Price",
-    cell: ({ row }) => (
-      <div>£{Number(row.original.base_price).toFixed(2)}</div>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "duration_minutes",
-    header: "Duration",
-    cell: ({ row }) => (
-      <div>{row.original.duration_minutes} minutes</div>
-    ),
-    enableSorting: true,
+    accessorKey: "pricing_options",
+    header: "Pricing Options",
+    cell: ({ row }) => {
+      const options = row.original.options || [];
+      return (
+        <div className="space-y-1">
+          {options.map((option) => (
+            <div key={option.id} className="text-sm">
+              <span className="font-medium">{option.label}:</span>{' '}
+              £{Number(option.price).toFixed(2)}
+              {option.is_variable && (
+                <span className="text-gray-500 ml-1">
+                  (per unit, {option.min_qty}-{option.max_qty} units)
+                </span>
+              )}
+            </div>
+          ))}
+          {options.length === 0 && (
+            <span className="text-gray-500 text-sm">No pricing options set</span>
+          )}
+        </div>
+      );
+    },
+    enableSorting: false,
   },
   {
     accessorKey: "is_active",
@@ -59,11 +70,30 @@ export const columns = (handleEdit, handleDelete, handleView) => [
     cell: ({ row }) => (
       <Badge
         variant={row.original.is_active ? "success" : "secondary"}
+        className="cursor-pointer"
+        onClick={() => handleToggleStatus(row.original)}
       >
         {row.original.is_active ? "Active" : "Inactive"}
       </Badge>
     ),
     enableSorting: true,
+  },
+  {
+    id: "manage_options",
+    header: "Options",
+    cell: ({ row }) => {
+      const service = row.original;
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.visit(route('admin.services.options.index', service.id))}
+        >
+          <Settings className="mr-2 h-4 w-4" />
+          Manage Options
+        </Button>
+      );
+    },
   },
   {
     id: "actions",

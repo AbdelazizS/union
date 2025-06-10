@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('image')->nullable();
             $table->text('description');
-            $table->decimal('base_price', 10, 2);
-            $table->integer('duration_minutes');
+            // $table->decimal('base_price', 10, 2);
+            // $table->integer('duration_minutes');
             $table->json('features')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

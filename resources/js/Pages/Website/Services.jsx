@@ -19,7 +19,7 @@ import CTASection from "@/components/website/Services/CTASection";
 import ServicesGrid from "@/components/website/Services/ServicesGrid";
 
 export default function Services({ categories = [], testimonials = [] }) {
-    const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.com';
+    const baseUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.uk';
     
     const structuredData = {
         "@context": "https://schema.org",
@@ -36,17 +36,26 @@ export default function Services({ categories = [], testimonials = [] }) {
                 "provider": {
                     "@type": "Organization",
                     "name": "Union Gate",
-                    "url": baseUrl
-                },
-                "offers": {
-                    "@type": "Offer",
-                    "price": category.hourly_rate > category.services[0].price ? category.hourly_rate : category.services[0].price,
-                    "priceCurrency": "USD",
-                    "availability": "https://schema.org/InStock"
+                    "url": baseUrl,
+                    "address": {
+                        "@type": "PostalAddress",
+                        "streetAddress": "1 Lochside View",
+                        "addressLocality": "Edinburgh",
+                        "addressRegion": "Scotland",
+                        "postalCode": "EH12 9DH",
+                        "addressCountry": "United Kingdom"
+                    },
+                    "telephone": "+477 730 788 3811",
+                    "email": "info@uniongate.uk"
                 },
                 "areaServed": {
-                    "@type": "City",
-                    "name": "Your City"
+                    "@type": "GeoCircle",
+                    "geoMidpoint": {
+                        "@type": "GeoCoordinates",
+                        "latitude": "55.9361427",
+                        "longitude": "-3.3185184"
+                    },
+                    "geoRadius": "50000"
                 }
             }
         }))
@@ -80,12 +89,12 @@ export default function Services({ categories = [], testimonials = [] }) {
 
     return (
         <WebsiteLayout
-            title="Commercial & Residential Cleaning Services"
-            description="Discover Union Gate's comprehensive cleaning services. From residential to commercial cleaning, our expert team delivers customized solutions with eco-friendly products and attention to detail."
-            canonical="/services"
-            ogImage="/images/services-og.jpg"
+            title="Commercial & Residential Cleaning Services Edinburgh | Union Gate"
+            description="Discover Union Gate's comprehensive cleaning services in Edinburgh. From residential to commercial cleaning, our expert team delivers customized solutions with eco-friendly products and attention to detail. Serving Edinburgh and surrounding areas."
+            canonical="/our-services"
+          ogImage="/favicon.ico"
             structuredData={structuredData}
-            keywords="Union Gate cleaning services, house cleaning, office cleaning, commercial cleaning, residential cleaning, deep cleaning, move-in cleaning, move-out cleaning, eco-friendly cleaning, professional cleaners"
+            keywords="Union Gate cleaning services Edinburgh, house cleaning Scotland, office cleaning Edinburgh, commercial cleaning EH12, residential cleaning Edinburgh, deep cleaning Scotland, move-in cleaning Edinburgh, move-out cleaning Scotland, eco-friendly cleaning UK, professional cleaners Edinburgh"
             author="Union Gate"
         >
             <HeroSection />
@@ -94,8 +103,7 @@ export default function Services({ categories = [], testimonials = [] }) {
                 categories={categories.map(category => ({
                     ...category,
                     services: category.services.map(service => ({
-                        ...service,
-                        price: category.hourly_rate > service.price ? category.hourly_rate : service.price
+                        ...service
                     }))
                 }))}
             />

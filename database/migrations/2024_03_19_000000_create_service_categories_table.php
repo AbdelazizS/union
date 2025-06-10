@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->decimal('hourly_rate', 10, 2);
+            // $table->decimal('hourly_rate', 10, 2);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             // $table->softDeletes();

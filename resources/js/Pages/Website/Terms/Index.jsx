@@ -39,24 +39,35 @@ export default function Terms() {
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Terms and Conditions",
-        "description": "Terms and Conditions for Professional Cleaning Services. Read our terms of service and understand your rights and responsibilities.",
+        "name": "Terms and Conditions | Union Gate",
+        "description": "Terms and Conditions for Union Gate's Professional Cleaning Services in Edinburgh. Read our terms of service and understand your rights and responsibilities.",
         "publisher": {
             "@type": "Organization",
-            "name": "Professional Cleaning Services"
+            "name": "Union Gate",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1 Lochside View",
+                "addressLocality": "Edinburgh",
+                "addressRegion": "Scotland",
+                "postalCode": "EH12 9DH",
+                "addressCountry": "United Kingdom"
+            },
+            "telephone": "+477 730 788 3811",
+            "email": "info@uniongate.uk",
+            "url": "https://uniongate.uk"
         },
         "datePublished": "2024-01-01",
-        "dateModified": "2024-01-01"
+        "dateModified": new Date().toISOString().split('T')[0]
     };
 
     return (
         <WebsiteLayout
-            title="Terms and Conditions | Professional Cleaning Services"
-            description="Read our terms and conditions to understand the rules and guidelines for using our cleaning services. We ensure transparency and clear communication."
-            canonical="https://yourwebsite.com/terms"
-            ogImage="/images/terms-og.jpg"
+            title="Terms and Conditions | Union Gate Cleaning Services Edinburgh"
+            description="Read Union Gate's terms and conditions to understand the rules and guidelines for using our professional cleaning services in Edinburgh. We ensure transparency and clear communication."
+            canonical="/terms"
+                 ogImage="/favicon.ico"
             structuredData={structuredData}
-            keywords="terms and conditions, service terms, cleaning service terms, legal terms, service agreement"
+            keywords="Union Gate terms and conditions, Edinburgh cleaning service terms, professional cleaning legal terms, service agreement Edinburgh, cleaning service terms Scotland"
         >
             {/* Hero Section */}
             <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden bg-primary/5 z-10">
@@ -149,8 +160,8 @@ export default function Terms() {
                             </p>
                             <div className="flex items-center gap-2 text-primary">
                                 <ChevronRight className="w-4 h-4" />
-                                <a href="mailto:legal@company.com" className="hover:underline">
-                                    legal@company.com
+                                <a href="mailto:info@uniongate.uk" className="hover:underline">
+                                    info@uniongate.uk
                                 </a>
                             </div>
                         </motion.div>

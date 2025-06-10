@@ -1,151 +1,143 @@
-import { format } from "date-fns";
+import { MoreHorizontal, Pencil, Trash, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { DataTableRowActions } from "@/components/ui/data-table-row-actions";
+import { format } from "date-fns";
+import { Link } from "@inertiajs/react";
 
 export const columns = ({ onConfirm, onComplete, onCancel }) => [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "booking_number",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Booking #" />
-    ),
+    header: "Booking #",
+    cell: ({ row }) => <div className="font-medium">{row.original.booking_number}</div>,
+    enableSorting: true,
   },
   {
     accessorKey: "customer_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer" />
+    header: "Customer",
+    cell: ({ row }) => (
+      <div>
+        <div className="font-medium">{row.original.customer_name}</div>
+        <div className="text-sm text-gray-500">{row.original.customer_email}</div>
+      </div>
     ),
+    enableSorting: true,
   },
   {
-    accessorKey: "service.name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Service" />
+    accessorKey: "service",
+    header: "Service",
+    cell: ({ row }) => (
+      <div>
+        <div className="font-medium">{row.original.service?.name}</div>
+      </div>
     ),
+    enableSorting: true,
   },
   {
     accessorKey: "booking_date",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+    header: "Date & Time",
+    cell: ({ row }) => (
+      <div>
+        <div>{format(new Date(row.original.booking_date), "MMM d, yyyy")}</div>
+        <div className="text-sm text-gray-500">
+          {row.original.booking_time}
+        </div>
+      </div>
     ),
-    cell: ({ row }) => format(new Date(row.getValue("booking_date")), "PPP"),
-  },
-  {
-    accessorKey: "duration_hours",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Duration" />
-    ),
-    cell: ({ row }) => `${row.getValue("duration_hours")} hours`,
-  },
-  {
-    accessorKey: "frequency",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Frequency" />
-    ),
-    cell: ({ row }) => {
-      const frequency = row.getValue("frequency") || "one_time";
-      return (
-        <span className="capitalize">
-          {frequency.replace("_", " ")}
-        </span>
-      );
-    },
+    enableSorting: true,
   },
   {
     accessorKey: "final_amount",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Amount" />
-    ),
+    header: "Total Price",
     cell: ({ row }) => (
-      <span className="font-medium">
-        £{parseFloat(row.getValue("final_amount")).toFixed(2)}
-      </span>
+      <div className="font-medium">£{Number(row.original.final_amount).toFixed(2)}</div>
     ),
+    enableSorting: true,
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+    header: "Status",
+    cell: ({ row }) => (
+      <Badge variant={getStatusVariant(row.original.status)}>
+        {row.original.status}
+      </Badge>
     ),
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      const variants = {
-        pending: "warning",
-        confirmed: "info",
-        completed: "success",
-        cancelled: "destructive",
-      };
-
-      return (
-        <Badge variant={variants[status]} className="capitalize">
-          {status}
-        </Badge>
-      );
-    },
+    enableSorting: true,
   },
   {
     id: "actions",
     cell: ({ row }) => {
       const booking = row.original;
-      const canConfirm = booking.status === "pending";
-      const canComplete = booking.status === "confirmed";
-      const canCancel = ["pending", "confirmed"].includes(booking.status);
 
       return (
-        <DataTableRowActions
-          row={row}
-          actions={[
-            {
-              label: "View Details",
-              href: route("admin.bookings.show", booking.id),
-            },
-            {
-              label: "Edit Booking",
-              href: route("admin.bookings.edit", booking.id),
-            },
-            canConfirm && {
-              label: "Confirm Booking",
-              onClick: () => onConfirm(booking),
-            },
-            canComplete && {
-              label: "Mark as Completed",
-              onClick: () => onComplete(booking),
-            },
-            canCancel && {
-              label: "Cancel Booking",
-              onClick: () => onCancel(booking),
-              variant: "destructive",
-            },
-          ].filter(Boolean)}
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={route('admin.bookings.show', booking.id)}>
+                <Eye className="mr-2 h-4 w-4" />
+                View
+              </Link>
+            </DropdownMenuItem>
+            {booking.status === 'pending' && (
+              <>
+                <DropdownMenuItem onClick={() => onConfirm(booking.id)}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Confirm
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onCancel(booking.id)}>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Cancel
+                </DropdownMenuItem>
+              </>
+            )}
+            {booking.status === 'confirmed' && (
+              <>
+                <DropdownMenuItem onClick={() => onComplete(booking.id)}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Mark as Completed
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onCancel(booking.id)}>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Cancel
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
 ];
+
+function getStatusVariant(status) {
+  switch (status.toLowerCase()) {
+    case 'confirmed':
+      return 'info';
+    case 'pending':
+      return 'warning';
+    case 'cancelled':
+      return 'destructive';
+    case 'completed':
+      return 'default';
+    default:
+      return 'secondary';
+  }
+}
 
 export const statuses = [
   {

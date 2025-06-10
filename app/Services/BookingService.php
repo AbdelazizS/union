@@ -44,8 +44,10 @@ class BookingService
 
     public function calculatePricing(array $data)
     {
+        try {
+            $this->validateData($data);
+
         $baseAmount = $this->calculateBaseAmount($data);
-      
         $frequencyDiscount = $this->calculateFrequencyDiscount($data, $baseAmount);
         $bulkDiscount = $this->calculateBulkDiscount($data, $baseAmount);
         $specialPeriodAdjustment = $this->calculateSpecialPeriodAdjustment($data);
@@ -60,61 +62,150 @@ class BookingService
             'special_period_adjustment' => round($specialPeriodAdjustment, 2),
             'coupon_discount' => round($couponDiscount, 2),
             'final_amount' => round(max(0, $finalAmount), 2),
-        ];
+                'breakdown' => [
+                    'selected_options' => $this->getSelectedOptionsBreakdown($data),
+                    'special_periods' => $this->getApplicableSpecialPeriods($data)
+                ]
+            ];
+        } catch (\Exception $e) {
+            throw new \Exception('Error calculating pricing: ' . $e->getMessage());
+        }
+    }
+
+    private function validateData(array $data)
+    {
+        $required = ['service_id', 'booking_date', 'selected_options'];
+        foreach ($required as $field) {
+            if (!isset($data[$field])) {
+                throw new \Exception("Missing required field: {$field}");
+            }
+        }
+
+        try {
+            new Carbon($data['booking_date']);
+        } catch (\Exception $e) {
+            throw new \Exception('Invalid booking date format');
+        }
     }
 
     private function calculateBaseAmount(array $data)
     {
-        // Get the service's base rate per hour
         $service = Service::find($data['service_id']);
+        if (!$service) {
+            throw new \Exception('Service not found');
+        }
 
-         // 1. Get the base price set for this specific service
-        $basePrice = $service->base_price;
-        // 2. Get the hourly rate from the service's category
-        $categoryRate = $service->category->hourly_rate;
-        
-        // 3. Compare and take the higher rate between base_price and category hourly_rate
-        $hourlyRate = max($basePrice, $categoryRate);
-        return $hourlyRate * $data['duration_hours'];
+        return $service->calculatePrice($data['selected_options']);
+    }
+
+    private function getSelectedOptionsBreakdown(array $data)
+    {
+        $service = Service::find($data['service_id']);
+        if (!$service) {
+            return [];
+        }
+
+        $breakdown = [];
+        $quantity = $data['quantity'] ?? 1;
+
+        foreach ($data['selected_options'] as $optionId) {
+            $option = $service->options()->find($optionId);
+            if ($option) {
+                $optionQuantity = $option->is_variable ? $quantity : 1;
+                $breakdown[] = [
+                    'label' => $option->label,
+                    'quantity' => $optionQuantity,
+                    'price' => $option->price,
+                    'total' => $option->is_variable 
+                        ? $option->price * $optionQuantity 
+                        : $option->price
+                ];
+            }
+        }
+
+        return $breakdown;
     }
 
     private function calculateFrequencyDiscount(array $data, float $baseAmount)
     {
-        return 0;
         $discountPercentages = [
             'weekly' => 0.15,    // 15% discount
             'biweekly' => 0.10,  // 10% discount
             'monthly' => 0.05,   // 5% discount
         ];
 
-        return isset($discountPercentages[$data['frequency']]) 
+        return isset($discountPercentages[$data['frequency'] ?? '']) 
             ? $baseAmount * $discountPercentages[$data['frequency']]
             : 0;
     }
 
     private function calculateBulkDiscount(array $data, float $baseAmount)
     {
-        // if ($data['duration_hours'] >= 8) {
-        //     return $baseAmount * 0.1; // 10% discount for 8+ hours
-        // } elseif ($data['duration_hours'] >= 4) {
-        //     return $baseAmount * 0.05; // 5% discount for 4-7 hours
-        // }
+        // Calculate total quantity of all selected options
+        $totalQuantity = array_sum($data['selected_options']);
+
+        if ($totalQuantity >= 8) {
+            return $baseAmount * 0.1; // 10% discount for 8+ items
+        } elseif ($totalQuantity >= 4) {
+            return $baseAmount * 0.05; // 5% discount for 4-7 items
+        }
         return 0;
     }
 
     private function calculateSpecialPeriodAdjustment(array $data)
     {
-        // Example: Weekend surcharge
-        // $bookingDate = new \DateTime($data['booking_date']);
-        // $isWeekend = in_array($bookingDate->format('N'), [6, 7]); // 6 = Saturday, 7 = Sunday
+        $bookingDate = new Carbon($data['booking_date']);
+        $totalAdjustment = 0;
 
-        // return $isWeekend ? 12 : 0; // $12 surcharge for weekends
-        return 0;
+        // Check weekend surcharge
+        if (in_array($bookingDate->format('N'), $this->specialPeriods['weekend']['days'])) {
+            $totalAdjustment += $this->specialPeriods['weekend']['surcharge'];
+        }
+
+        // Check holiday surcharge
+        if (in_array($bookingDate->format('m-d'), $this->specialPeriods['holiday']['dates'])) {
+            $totalAdjustment += $this->specialPeriods['holiday']['surcharge'];
+        }
+
+        // Check peak hours surcharge
+        if (in_array($bookingDate->format('G'), $this->specialPeriods['peak_hours']['hours'])) {
+            $totalAdjustment += $this->specialPeriods['peak_hours']['surcharge'];
+        }
+
+        return $totalAdjustment;
+    }
+
+    private function getApplicableSpecialPeriods(array $data)
+    {
+        $bookingDate = new Carbon($data['booking_date']);
+        $applicable = [];
+
+        if (in_array($bookingDate->format('N'), $this->specialPeriods['weekend']['days'])) {
+            $applicable[] = [
+                'type' => 'weekend',
+                'surcharge' => $this->specialPeriods['weekend']['surcharge']
+            ];
+        }
+
+        if (in_array($bookingDate->format('m-d'), $this->specialPeriods['holiday']['dates'])) {
+            $applicable[] = [
+                'type' => 'holiday',
+                'surcharge' => $this->specialPeriods['holiday']['surcharge']
+            ];
+        }
+
+        if (in_array($bookingDate->format('G'), $this->specialPeriods['peak_hours']['hours'])) {
+            $applicable[] = [
+                'type' => 'peak_hours',
+                'surcharge' => $this->specialPeriods['peak_hours']['surcharge']
+            ];
+        }
+
+        return $applicable;
     }
 
     private function calculateCouponDiscount(array $data, float $baseAmount)
     {
-        return 0;
         if (empty($data['coupon_code'])) {
             return 0;
         }
@@ -127,28 +218,14 @@ class BookingService
             return 0;
         }
 
-        // // Check if the coupon is applicable to this service
-        // if (!empty($coupon->applicable_services) && 
-        //     !in_array($data['service_id'], $coupon->applicable_services)) {
-        //     return 0;
-        // }
-
-        // // Check if the coupon is applicable to this service's category
-        // $service = Service::find($data['service_id']);
-        // if (!empty($coupon->applicable_categories) && 
-        //     !in_array($service->category_id, $coupon->applicable_categories)) {
-        //     return 0;
-        // }
-
         // Check minimum order amount
         if ($coupon->min_order_amount && $baseAmount < $coupon->min_order_amount) {
             return 0;
         }
 
-        // Calculate the discount
         $discount = $coupon->type === 'percentage'
             ? $baseAmount * ($coupon->discount_value / 100)
-            : min($coupon->discount_value, $baseAmount);
+            : $coupon->discount_value;
 
         // Apply maximum discount limit if set
         if ($coupon->max_discount_amount) {

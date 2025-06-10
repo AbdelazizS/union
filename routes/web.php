@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Website\BookingController as WebsiteBookingController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Admin\ServiceOptionController;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
 
@@ -83,6 +84,15 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     Route::get('/settings/export', [SettingController::class, 'export'])->name('settings.export');
     Route::post('/settings/import', [SettingController::class, 'import'])->name('settings.import');
+
+    // Service Options Routes
+    Route::get('services/{service}/options', [ServiceOptionController::class, 'index'])->name('services.options.index');
+    Route::get('services/{service}/options/create', [ServiceOptionController::class, 'create'])->name('services.options.create');
+    Route::post('services/{service}/options', [ServiceOptionController::class, 'store'])->name('services.options.store');
+    Route::get('services/{service}/options/{option}/edit', [ServiceOptionController::class, 'edit'])->name('services.options.edit');
+    Route::put('services/{service}/options/{option}', [ServiceOptionController::class, 'update'])->name('services.options.update');
+    Route::delete('services/{service}/options/{option}', [ServiceOptionController::class, 'destroy'])->name('services.options.destroy');
+    Route::post('services/{service}/options/reorder', [ServiceOptionController::class, 'reorder'])->name('services.options.reorder');
 });
 
 // Profile Routes (keep these outside admin group)
@@ -93,21 +103,13 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/our-services', [WebsiteController::class, 'services'])->name('services');
-Route::get('/our-services/{category}/{service}', [WebsiteController::class, 'serviceDetail'])->name('service.detail');
-
-// About Page Route
+Route::get('/our-services/{categorySlug}/{serviceSlug}', [WebsiteController::class, 'serviceDetail'])->name('service.detail');
+Route::get('/book', [WebsiteController::class, 'booking'])->name('booking');
+Route::get('/book/{serviceId}', [WebsiteController::class, 'booking'])->name('booking.with-service');
+Route::post('/book', [WebsiteController::class, 'storeBooking'])->name('booking.store');
 Route::get('/about', [WebsiteController::class, 'about'])->name('about');
-
-// Website Booking Routes
-Route::prefix('booking')->name('website.booking.')->group(function () {
-    Route::get('/create', [WebsiteBookingController::class, 'create'])->name('create');
-    Route::post('/store', [WebsiteBookingController::class, 'store'])->name('store');
-    Route::get('/confirmation/{booking}', [WebsiteBookingController::class, 'confirmation'])->name('confirmation');
-    Route::post('/calculate-price', [WebsiteBookingController::class, 'calculatePrice'])->name('calculate-price');
-});
-
-Route::get('/contact', [WebsiteController::class, 'contact'])->name('website.contact');
-Route::post('/contact', [WebsiteController::class, 'submitContactForm'])->name('website.contact.submit');
+Route::get('/contact', [WebsiteController::class, 'contact'])->name('contact');
+Route::post('/contact', [WebsiteController::class, 'submitContactForm'])->name('contact.submit');
 
 // Legal Pages Routes
 Route::get('/terms', function () {
@@ -117,5 +119,14 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return Inertia::render('Website/Privacy/Index');
 })->name('website.privacy');
+
+// Website Booking Routes
+Route::prefix('website')->name('website.')->group(function () {
+    // Route::get('/book', [WebsiteController::class, 'booking'])->name('booking');
+    Route::get('/book/{serviceId}', [WebsiteController::class, 'booking'])->name('booking.with-service');
+    Route::post('/book', [WebsiteController::class, 'storeBooking'])->name('booking.store');
+    Route::post('/book/calculate-price', [WebsiteController::class, 'calculatePrice'])->name('booking.calculate-price');
+    Route::get('/book/confirmation/{booking}', [WebsiteController::class, 'bookingSuccess'])->name('booking.confirmation');
+});
 
 require __DIR__.'/auth.php';

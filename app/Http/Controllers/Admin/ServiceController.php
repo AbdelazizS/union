@@ -15,7 +15,9 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::with('category')
+        $services = Service::with(['category', 'options' => function ($query) {
+            $query->orderBy('sort_order');
+        }])
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($service) {
@@ -24,8 +26,7 @@ class ServiceController extends Controller
                     'name' => $service->name,
                     'slug' => $service->slug,
                     'description' => $service->description,
-                    'base_price' => $service->base_price,
-                    'duration_minutes' => $service->duration_minutes,
+                    // 'duration_minutes' => $service->duration_minutes,
                     'features' => $service->features,
                     'is_active' => $service->is_active,
                     'image_url' => $service->image_url,
@@ -33,6 +34,18 @@ class ServiceController extends Controller
                         'id' => $service->category->id,
                         'name' => $service->category->name,
                     ] : null,
+                    'options' => $service->options->map(function ($option) {
+                        return [
+                            'id' => $option->id,
+                            'label' => $option->label,
+                            'price' => $option->price,
+                            'min_qty' => $option->min_qty,
+                            'max_qty' => $option->max_qty,
+                            'is_variable' => $option->is_variable,
+                            'note' => $option->note,
+                            'is_active' => $option->is_active,
+                        ];
+                    }),
                     'created_at' => $service->created_at,
                     'updated_at' => $service->updated_at,
                 ];
@@ -54,14 +67,31 @@ class ServiceController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $categories = ServiceCategory::where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                ];
+            });
+
+        return Inertia::render('Admin/Services/Create', [
+            'categories' => $categories,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:255', Rule::unique('services')],
             'category_id' => ['required', 'exists:service_categories,id'],
             'description' => ['required', 'string', 'min:10'],
-            'base_price' => ['required', 'numeric', 'min:0'],
-            'duration_minutes' => ['required', 'integer', 'min:1'],
+            // 'base_price' => ['required', 'numeric', 'min:0'],
+            // 'duration_minutes' => ['required', 'integer', 'min:1'],
             'features' => ['nullable', 'array'],
             'features.*' => ['string', 'max:255'],
             'is_active' => ['boolean'],
@@ -97,7 +127,7 @@ class ServiceController extends Controller
 
             return redirect()->back()->with('success', 'Service created successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to create service. Please try again.']);
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
@@ -107,8 +137,8 @@ class ServiceController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:255', Rule::unique('services')->ignore($service->id)],
             'category_id' => ['required', 'exists:service_categories,id'],
             'description' => ['required', 'string', 'min:10'],
-            'base_price' => ['required', 'numeric', 'min:0'],
-            'duration_minutes' => ['required', 'integer', 'min:1'],
+            // 'base_price' => ['required', 'numeric', 'min:0'],
+            // 'duration_minutes' => ['required', 'integer', 'min:1'],
             'features' => ['nullable', 'array'],
             'features.*' => ['string', 'max:255'],
             'is_active' => ['boolean'],

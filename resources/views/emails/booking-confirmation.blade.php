@@ -35,10 +35,6 @@
             <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->booking_date->format('F j, Y') }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #64748b;">Duration:</td>
-            <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->duration_hours }} hours</td>
-        </tr>
-        <tr>
             <td style="padding: 8px 0; color: #64748b;">Location:</td>
             <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">{{ $booking->customer_address }}</td>
         </tr>
@@ -54,23 +50,23 @@
     <table style="width: 100%; border-collapse: collapse;">
         <tr>
             <td style="padding: 8px 0; color: #64748b;">Base Amount:</td>
-            <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">${{ number_format($booking->base_amount, 2) }}</td>
+            <td style="padding: 8px 0; color: #334155; font-weight: 500; text-align: right;">£{{ number_format($booking->base_amount, 2) }}</td>
         </tr>
         @if($booking->frequency_discount > 0)
         <tr>
             <td style="padding: 8px 0; color: #64748b;">Frequency Discount:</td>
-            <td style="padding: 8px 0; color: #059669; font-weight: 500; text-align: right;">-${{ number_format($booking->frequency_discount, 2) }}</td>
+            <td style="padding: 8px 0; color: #059669; font-weight: 500; text-align: right;">-£{{ number_format($booking->frequency_discount, 2) }}</td>
         </tr>
         @endif
         @if($booking->coupon_discount > 0)
         <tr>
             <td style="padding: 8px 0; color: #64748b;">Coupon Discount:</td>
-            <td style="padding: 8px 0; color: #059669; font-weight: 500; text-align: right;">-${{ number_format($booking->coupon_discount, 2) }}</td>
+            <td style="padding: 8px 0; color: #059669; font-weight: 500; text-align: right;">-£{{ number_format($booking->coupon_discount, 2) }}</td>
         </tr>
         @endif
         <tr style="border-top: 1px solid #e2e8f0;">
             <td style="padding: 12px 0; color: #334155; font-weight: 600;">Total Amount:</td>
-            <td style="padding: 12px 0; color: #334155; font-weight: 600; text-align: right;">${{ number_format($booking->final_amount, 2) }}</td>
+            <td style="padding: 12px 0; color: #334155; font-weight: 600; text-align: right;">£{{ number_format($booking->final_amount, 2) }}</td>
         </tr>
     </table>
 </div>

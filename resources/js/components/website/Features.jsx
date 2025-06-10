@@ -174,7 +174,7 @@ const Features = () => {
                 </motion.ul>
 
                 <Link
-                                        href={`/booking/create`}
+                                        href={`/book`}
                                     >
                 <motion.button
                                       
@@ -200,7 +200,7 @@ const Features = () => {
               <CardContent className="p-0">
               <div className="aspect-w-16 aspect-h-9 rounded-3xl overflow-hidden">
                   <motion.img
-                    src="/images/hero-cleaning.jpg"
+                    src="/images/hero_bg_1.webp"
                     alt="Professional cleaning service"
                     className="object-cover w-full h-full"
                     whileHover={{ 

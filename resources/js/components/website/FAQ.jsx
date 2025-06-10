@@ -84,10 +84,10 @@ export default function FAQ({ faqs = [] }) {
                     <Button
                         asChild
                         size="lg"
-                        className="group relative overflow-hidden"
+                        className="group relative overflow-hidden gap-1"
                     >
                         <Link
-                            href={`contact}`}
+                            href={`contact`}
                         >
 
                             <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />

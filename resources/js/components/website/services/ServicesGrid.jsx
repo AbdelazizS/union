@@ -158,12 +158,12 @@ export default function ServicesGrid({ categories = [] }) {
                                                         <div className="flex items-center gap-4 text-sm">
                                                             <div className="flex items-center gap-1.5 text-primary">
                                                                 <PoundSterling className="h-4 w-4" />
-                                                                <span className="font-medium">{service.price}</span>
+                                                                <span className="font-medium">From {service.price}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 text-primary">
+                                                            {/* <div className="flex items-center gap-1.5 text-primary">
                                                                 <Clock className="h-4 w-4" />
                                                                 <span className="font-medium">{service.duration}</span>
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                         <ChevronRight className="h-5 w-5 text-primary transform group-hover:translate-x-1 transition-transform duration-300" />
                                                     </div>

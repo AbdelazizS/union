@@ -23,22 +23,29 @@ export default function About() {
         "@type": "AboutPage",
         "mainEntity": {
             "@type": "Organization",
-            "name": "Professional Cleaning Services",
-            "description": "Professional cleaning services for homes and offices. Eco-friendly products, trained staff, and 100% satisfaction guaranteed.",
-            "foundingDate": "YOUR_FOUNDING_DATE",
+            "name": "Union Gate",
+            "description": "Union Gate provides premium cleaning services in Edinburgh. Eco-friendly products, trained staff, and 100% satisfaction guaranteed.",
+            "foundingDate": "2024",
             "founders": [{
                 "@type": "Person",
-                "name": "Founder Name"
+                "name": "Ahmed Abbas"
             }],
-            "awards": [
-                "Best Cleaning Service 2023",
-                "Customer Satisfaction Award"
-            ],
             "numberOfEmployees": {
                 "@type": "QuantitativeValue",
-                "minValue": "10",
-                "maxValue": "50"
-            }
+                "minValue": "2",
+                "maxValue": "10"
+            },
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1 Lochside View",
+                "addressLocality": "Edinburgh",
+                "addressRegion": "Scotland",
+                "postalCode": "EH12 9DH",
+                "addressCountry": "United Kingdom"
+            },
+            "telephone": "+477 730 788 3811",
+            "email": "info@uniongate.uk",
+            "url": "https://uniongate.uk"
         }
     };
 
@@ -98,12 +105,12 @@ export default function About() {
 
     return (
         <WebsiteLayout
-            title="About Us | Professional Cleaning Services"
-            description="Learn about our professional cleaning company's history, mission, and commitment to excellence. Meet our team of dedicated cleaning professionals."
-            canonical="https://yourwebsite.com/about"
-            ogImage="/images/about-og.jpg"
+            title="About Union Gate | Professional Cleaning Services Edinburgh"
+            description="Learn about Union Gate's professional cleaning company in Edinburgh. Our history, mission, and commitment to excellence in cleaning services. Meet our team of dedicated cleaning professionals."
+            canonical="/about"
+      ogImage="/favicon.ico"
             structuredData={structuredData}
-            keywords="about cleaning company, cleaning service history, professional cleaners, cleaning company mission, cleaning team"
+            keywords="Union Gate Edinburgh, cleaning company Scotland, professional cleaners Edinburgh, cleaning service mission, cleaning team Edinburgh, eco-friendly cleaning Scotland"
         >
             {/* Fixed Progress Bar */}
             <motion.div
@@ -146,65 +153,116 @@ export default function About() {
                     </div>
 
                     <div className="container mx-auto px-4 relative">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center mb-16"
-                        >
-                            <motion.h2
-                                className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent"
-                                animate={{
-                                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                                }}
-                                transition={{
-                                    duration: 8,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                }}
+                        <div className="grid lg:grid-cols-2 gap-12 items-center">
+                            {/* Left Column - Content */}
+                            <motion.div
+                                initial={{ opacity: 0, x: -50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
                             >
-                                Why Choose Union Gate?
-                            </motion.h2>
-                            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                                Experience the difference of working with a cleaning service that puts quality and customer satisfaction first.
-                            </p>
-                        </motion.div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {whyChooseUs.map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="group relative"
+                                <motion.h2
+                                    className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent"
+                                    animate={{
+                                        backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                                    }}
+                                    transition={{
+                                        duration: 8,
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                    }}
                                 >
-                                    <motion.div
-                                        whileHover={{ y: -10 }}
-                                        className="relative bg-card/50 backdrop-blur-xl p-8 rounded-2xl border border-primary/10 overflow-hidden"
-                                    >
-                                        <motion.div
-                                            className="inline-flex p-4 rounded-xl bg-primary/10 text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-300"
-                                            whileHover={{ scale: 1.1, rotate: 360 }}
-                                            transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                                        >
-                                            <item.icon className="w-6 h-6" />
-                                        </motion.div>
-                                        <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                                        <p className="text-muted-foreground">{item.description}</p>
+                                    Why Choose Union Gate?
+                                </motion.h2>
+                                <p className="text-xl text-muted-foreground mb-12">
+                                    Experience the difference of working with a cleaning service that puts quality and customer satisfaction first.
+                                </p>
 
-                                        {/* Hover Glow Effect */}
+                                <div className="grid gap-6">
+                                    {whyChooseUs.map((item, index) => (
                                         <motion.div
-                                            className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                            style={{
-                                                background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
-                                                opacity: 0.1,
-                                            }}
-                                        />
-                                    </motion.div>
+                                            key={index}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: index * 0.1 }}
+                                            className="group relative"
+                                        >
+                                            <motion.div
+                                                whileHover={{ x: 10 }}
+                                                className="relative bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-primary/10 overflow-hidden"
+                                            >
+                                                <div className="flex items-start gap-6">
+                                                    <motion.div
+                                                        whileHover={{ scale: 1.1, rotate: 360 }}
+                                                        className="inline-flex p-4 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                                                        transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                                                    >
+                                                        <item.icon className="w-6 h-6" />
+                                                    </motion.div>
+                                                    <div>
+                                                        <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                                                        <p className="text-muted-foreground">{item.description}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Hover Glow Effect */}
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                    style={{
+                                                        background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
+                                                        opacity: 0.1,
+                                                    }}
+                                                />
+                                            </motion.div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+
+                            {/* Right Column - Image */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                className="relative h-[600px] rounded-2xl overflow-hidden group"
+                            >
+                                <motion.div
+                                    className="absolute inset-0"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <img
+                                        src="/images/hero_bg_1.webp"
+                                        alt="Professional Cleaning Service"
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                 </motion.div>
-                            ))}
+
+                                {/* Floating Stats */}
+                                <div className="absolute bottom-8 left-8 right-8 grid grid-cols-2 gap-4">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.3 }}
+                                        className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20"
+                                    >
+                                        <div className="text-3xl font-bold text-white mb-1">24/7</div>
+                                        <div className="text-white/80">Service Available</div>
+                                    </motion.div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.4 }}
+                                        className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20"
+                                    >
+                                        <div className="text-3xl font-bold text-white mb-1">100%</div>
+                                        <div className="text-white/80">Satisfaction</div>
+                                    </motion.div>
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
                 </section>
@@ -277,7 +335,7 @@ export default function About() {
                                                 viewport={{ once: true }}
                                                 transition={{ delay: index * 0.2 + 0.3 }}
                                             >
-                                                {/* <ArrowRight className="w-8 h-8" /> */}
+                                                <ArrowRight className="w-8 h-8" />
                                             </motion.div>
                                         </div>
                                     )}
@@ -306,6 +364,30 @@ export default function About() {
                                 </motion.div>
                             ))}
                         </div>
+
+                        {/* Added CTA Section */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="mt-16 text-center"
+                        >
+                            <Link href="/book">
+                                <Button
+                                    size="lg"
+                                    className="relative overflow-hidden group bg-primary hover:bg-primary/90"
+                                >
+                                    <span className="relative z-10">Start Booking Now</span>
+                                    <motion.div
+                                        className="absolute inset-0 bg-white/20"
+                                        initial={{ x: "-100%" }}
+                                        whileHover={{ x: "100%" }}
+                                        transition={{ duration: 0.5 }}
+                                    />
+                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                            </Link>
+                        </motion.div>
                     </div>
                 </section>
 
@@ -358,7 +440,7 @@ export default function About() {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
-                                    href={`/booking/create`}
+                                    href={`/book`}
                                 >
 
                                 <Button

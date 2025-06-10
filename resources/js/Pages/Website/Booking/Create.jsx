@@ -3,12 +3,11 @@ import { Head, router } from "@inertiajs/react";
 import { motion } from "framer-motion";
 import {
     Calendar as CalendarIcon,
-    Clock,
-    DollarSign,
     CheckCircle2,
     ArrowRight,
     Sparkles,
     Tag,
+    Package,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,19 +44,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import axios from "axios";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Form validation schema
 const bookingFormSchema = z.object({
     service_id: z.string().min(1, "Please select a service"),
+    selected_options: z.array(z.object({
+        option_id: z.string(),
+        quantity: z.number().optional(),
+    })).min(1, "Please select at least one option"),
     booking_date: z.date({
         required_error: "Please select a date",
         invalid_type_error: "That's not a valid date",
-    }),
-    duration_hours: z.number()
-        .min(1, "Duration must be at least 1 hour")
-        .max(24, "Duration cannot exceed 24 hours"),
-    frequency: z.enum(["one_time", "weekly", "biweekly", "monthly"], {
-        required_error: "Please select a frequency",
     }),
     customer_name: z.string()
         .min(2, "Name must be at least 2 characters")
@@ -74,19 +72,19 @@ const bookingFormSchema = z.object({
     coupon_code: z.string().max(50, "Coupon code cannot exceed 50 characters").optional(),
 });
 
-export default function Create({ service, services }) {
+export default function Create({ services, selectedServiceId }) {
     const [priceDetails, setPriceDetails] = useState(null);
     const [isCalculating, setIsCalculating] = useState(false);
     const [calculationError, setCalculationError] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(bookingFormSchema),
         defaultValues: {
-            service_id: service?.id?.toString() || "",
+            service_id: selectedServiceId?.toString() || "",
+            selected_options: [],
             booking_date: new Date(),
-            duration_hours: 1,
-            frequency: "one_time",
             customer_name: "",
             customer_email: "",
             customer_phone: "",
@@ -96,18 +94,18 @@ export default function Create({ service, services }) {
         },
     });
 
-    const frequencies = [
-        { value: "one_time", label: "One Time" },
-        { value: "weekly", label: "Weekly" },
-        { value: "biweekly", label: "Bi-weekly" },
-        { value: "monthly", label: "Monthly" },
-    ];
+    useEffect(() => {
+        if (form.watch("service_id")) {
+            const service = services.find(s => s.id.toString() === form.watch("service_id"));
+            setSelectedService(service);
+        }
+    }, [form.watch("service_id")]);
 
     useEffect(() => {
-        if (form.watch("service_id") && form.watch("duration_hours")) {
+        if (form.watch("service_id") && form.watch("selected_options").length > 0) {
             calculatePrice();
         }
-    }, [form.watch("service_id"), form.watch("duration_hours"), form.watch("coupon_code")]);
+    }, [form.watch("service_id"), form.watch("selected_options"), form.watch("coupon_code")]);
 
     const calculatePrice = async () => {
         setIsCalculating(true);
@@ -116,10 +114,8 @@ export default function Create({ service, services }) {
         try {
             const response = await axios.post(route("website.booking.calculate-price"), {
                 service_id: form.getValues("service_id"),
-                duration_hours: form.getValues("duration_hours"),
+                selected_options: form.getValues("selected_options"),
                 coupon_code: form.getValues("coupon_code"),
-                booking_date: format(form.getValues("booking_date"), "yyyy-MM-dd"),
-                frequency: form.getValues("frequency"),
             });
             setPriceDetails(response.data);
         } catch (error) {
@@ -136,11 +132,10 @@ export default function Create({ service, services }) {
             ...data,
             booking_date: format(data.booking_date, "yyyy-MM-dd"),
         }, {
-            onStart: () => {
-                setIsSubmitting(true)
-            },
-            onFinish: () => {
-                setIsSubmitting(false)
+            onStart: () => setIsSubmitting(true),
+            onFinish: () => setIsSubmitting(false),
+            onError:(error)=>{
+                
             }
         });
     };
@@ -201,7 +196,7 @@ export default function Create({ service, services }) {
                                                                             key={service.id}
                                                                             value={service.id.toString()}
                                                                         >
-                                                                            {service.name} - ${Math.max(service.base_price, service.category.hourly_rate)}/hr
+                                                                            {service.name}
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -211,58 +206,93 @@ export default function Create({ service, services }) {
                                                     )}
                                                 />
 
-                                                <div className="grid sm:grid-cols-2 gap-4">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="duration_hours"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Duration (hours)</FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="number"
-                                                                        min="1"
-                                                                        max="24"
-                                                                        {...field}
-                                                                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                                {selectedService && (
+                                                    <div className="space-y-4">
+                                                        <Label>Service Options</Label>
+                                                        <div className="grid gap-4">
+                                                            {selectedService.options.map((option) => (
+                                                                <div key={option.id} className="flex items-start space-x-3">
+                                                                    <Checkbox
+                                                                        id={`option-${option.id}`}
+                                                                        checked={form.watch("selected_options").some(
+                                                                            (o) => o.option_id === option.id.toString()
+                                                                        )}
+                                                                        onCheckedChange={(checked) => {
+                                                                            const currentOptions = form.getValues("selected_options");
+                                                                            if (checked) {
+                                                                                form.setValue("selected_options", [
+                                                                                    ...currentOptions,
+                                                                                    {
+                                                                                        option_id: option.id.toString(),
+                                                                                        quantity: option.is_variable ? 1 : undefined,
+                                                                                    },
+                                                                                ]);
+                                                                            } else {
+                                                                                form.setValue(
+                                                                                    "selected_options",
+                                                                                    currentOptions.filter(
+                                                                                        (o) => o.option_id !== option.id.toString()
+                                                                                    )
+                                                                                );
+                                                                            }
+                                                                        }}
                                                                     />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="frequency"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Frequency</FormLabel>
-                                                                <Select
-                                                                    onValueChange={field.onChange}
-                                                                    defaultValue={field.value}
-                                                                >
-                                                                    <FormControl>
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Select frequency" />
-                                                                        </SelectTrigger>
-                                                                    </FormControl>
-                                                                    <SelectContent>
-                                                                        {frequencies.map((freq) => (
-                                                                            <SelectItem
-                                                                                key={freq.value}
-                                                                                value={freq.value}
-                                                                            >
-                                                                                {freq.label}
-                                                                            </SelectItem>
-                                                                        ))}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
+                                                                    <div className="grid gap-1.5 leading-none">
+                                                                        <Label
+                                                                            htmlFor={`option-${option.id}`}
+                                                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                        >
+                                                                            {option.label} - £{option.price}
+                                                                            {option.is_variable && (
+                                                                                <span className="text-sm text-muted-foreground">
+                                                                                    {" "}
+                                                                                    (per unit)
+                                                                                </span>
+                                                                            )}
+                                                                        </Label>
+                                                                        {option.note && (
+                                                                            <p className="text-sm text-muted-foreground">
+                                                                                {option.note}
+                                                                            </p>
+                                                                        )}
+                                                                        {option.is_variable && form.watch("selected_options").some(
+                                                                            (o) => o.option_id === option.id.toString()
+                                                                        ) && (
+                                                                            <div className="flex items-center space-x-2">
+                                                                                <Input
+                                                                                    type="number"
+                                                                                    min={option.min_qty || 1}
+                                                                                    max={option.max_qty}
+                                                                                    value={
+                                                                                        form.watch("selected_options").find(
+                                                                                            (o) => o.option_id === option.id.toString()
+                                                                                        )?.quantity || 1
+                                                                                    }
+                                                                                    onChange={(e) => {
+                                                                                        const value = parseInt(e.target.value);
+                                                                                        const currentOptions = form.getValues("selected_options");
+                                                                                        form.setValue(
+                                                                                            "selected_options",
+                                                                                            currentOptions.map((o) =>
+                                                                                                o.option_id === option.id.toString()
+                                                                                                    ? { ...o, quantity: value }
+                                                                                                    : o
+                                                                                            )
+                                                                                        );
+                                                                                    }}
+                                                                                    className="w-20"
+                                                                                />
+                                                                                <span className="text-sm text-muted-foreground">
+                                                                                    units
+                                                                                </span>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
 
                                                 <FormField
                                                     control={form.control}
@@ -327,11 +357,17 @@ export default function Create({ service, services }) {
                                                     <div className="bg-primary/5 rounded-lg p-4 space-y-2">
                                                         <div className="flex justify-between items-center">
                                                             <span>Base Price:</span>
-                                                            <span>${priceDetails.base_amount}</span>
+                                                            <span>£{priceDetails.base_amount}</span>
                                                         </div>
+                                                        {priceDetails.discount_amount > 0 && (
+                                                            <div className="flex justify-between items-center text-green-600">
+                                                                <span>Discount:</span>
+                                                                <span>-£{priceDetails.discount_amount}</span>
+                                                            </div>
+                                                        )}
                                                         <div className="flex justify-between items-center font-semibold border-t pt-2">
                                                             <span>Final Price:</span>
-                                                            <span>${priceDetails.final_amount}</span>
+                                                            <span>£{priceDetails.final_amount}</span>
                                                         </div>
                                                     </div>
                                                 )}

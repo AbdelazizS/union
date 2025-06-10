@@ -42,7 +42,6 @@ class BookingStatusNotification extends Notification implements ShouldQueue
             ->line('Booking Details:')
             ->line('Service: ' . $this->booking->service->name)
             ->line('Date: ' . $this->booking->booking_date->format('F j, Y'))
-            ->line('Duration: ' . $this->booking->duration_hours . ' hours')
             ->line('Status: ' . ucfirst($this->booking->status));
 
         if ($this->booking->status === 'confirmed') {

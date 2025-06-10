@@ -4,13 +4,15 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import ReactDOMServer from 'react-dom/server';
 import { route } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Union Gate';
+const appUrl = import.meta.env.VITE_APP_URL || 'https://uniongate.uk';
 
 createServer((page) =>
     createInertiaApp({
         page,
         render: ReactDOMServer.renderToString,
         title: (title) => `${title} - ${appName}`,
+        
         resolve: (name) =>
             resolvePageComponent(
                 `./Pages/${name}.jsx`,
@@ -22,6 +24,7 @@ createServer((page) =>
                     ...page.props.ziggy,
                     location: new URL(page.props.ziggy.location),
                 });
+
 
             return <App {...props} />;
         },

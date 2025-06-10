@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Head, router } from "@inertiajs/react";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -20,13 +20,12 @@ import {
 import { ServiceForm } from "./ServiceForm";
 import { usePage } from "@inertiajs/react";
 import AdminLayout from '@/Layouts/AdminLayout.jsx';
+import { ImageUpload } from "@/components/ui/image-upload";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  category_id: z.number().min(1, "Category is required"),
+  category_id: z.string().min(1, "Please select a category"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  base_price: z.number().min(0, "Base price must be positive"),
-  duration_minutes: z.number().min(1, "Duration must be at least 1 minute"),
   features: z.array(z.string()).optional(),
   is_active: z.boolean().default(true),
   image: z.string().optional(),
@@ -36,9 +35,7 @@ const defaultValues = {
   name: "",
   category_id: "",
   description: "",
-  base_price: 0,
-  duration_minutes: 60,
-  features: [],
+  features: [""],
   is_active: true,
   image: "",
 };
@@ -125,9 +122,8 @@ export default function Services({ services, categories }) {
     setEditingService(service);
     editForm.reset({
       ...service,
-      category_id: service.category?.id,
+      category_id: service.category?.id?.toString(),
       features: service.features || [],
-      base_price: Number(service.base_price)
     });
     setEditOpen(true);
   };
@@ -141,6 +137,26 @@ export default function Services({ services, categories }) {
           setDeleteOpen(false);
           setSelectedService(null);
           refreshData();
+        },
+        onError: (errors) => {
+          toast.error(errors.message || "Something went wrong");
+        },
+        onFinish: () => {
+          setIsSubmitting(false);
+        }
+      });
+    } catch (error) {
+      toast.error("Something went wrong");
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleToggleStatus = async (service) => {
+    setIsSubmitting(true);
+    try {
+      router.put(route('admin.services.toggle-status', service.id), {}, {
+        onSuccess: () => {
+          toast.success(`Service ${service.is_active ? 'deactivated' : 'activated'} successfully`);
         },
         onError: (errors) => {
           toast.error(errors.message || "Something went wrong");
@@ -170,67 +186,45 @@ export default function Services({ services, categories }) {
       <Head title="Services" />
       <div className="container mx-auto py-10 px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Services</h1>
-          
-          {/* Create Dialog */}
-          <Dialog open={createOpen} onOpenChange={(open) => {
-            if (!open) {
-              createForm.reset(defaultValues);
-            }
-            setCreateOpen(open);
-          }}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Service
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Add New Service</DialogTitle>
-                <DialogDescription>
-                  Fill in the details to create a new service.
-                </DialogDescription>
-              </DialogHeader>
-              <ServiceForm
-                form={createForm}
-                onSubmit={onCreateSubmit}
-                isSubmitting={isSubmitting}
-                categories={categories}
-              />
-            </DialogContent>
-          </Dialog>
-
-          {/* Edit Dialog */}
-          <Dialog open={editOpen} onOpenChange={(open) => {
-            if (!open) {
-              editForm.reset(defaultValues);
-              setEditingService(null);
-            }
-            setEditOpen(open);
-          }}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Edit Service</DialogTitle>
-                <DialogDescription>
-                  Update the details of this service.
-                </DialogDescription>
-              </DialogHeader>
-              <ServiceForm
-                form={editForm}
-                onSubmit={onEditSubmit}
-                isSubmitting={isSubmitting}
-                categories={categories}
-              />
-            </DialogContent>
-          </Dialog>
+          <div>
+            <h1 className="text-3xl font-bold">Services</h1>
+            <p className="text-muted-foreground mt-1">Manage your cleaning services</p>
+          </div>
+          <Button onClick={() => router.visit(route('admin.services.create'))}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Service
+          </Button>
         </div>
 
         <DataTable
-          columns={columns(handleEdit, confirmDelete, handleView)}
+          columns={columns(handleEdit, confirmDelete, handleToggleStatus, handleView)}
           data={services}
           searchKey="name"
         />
+
+        {/* Edit Dialog */}
+        <Dialog open={editOpen} onOpenChange={(open) => {
+          if (!open) {
+            setEditingService(null);
+            editForm.reset(defaultValues);
+          }
+          setEditOpen(open);
+        }}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Service</DialogTitle>
+              <DialogDescription>
+                Update the details of this service.
+              </DialogDescription>
+            </DialogHeader>
+            <ServiceForm
+              form={editForm}
+              onSubmit={onEditSubmit}
+              isSubmitting={isSubmitting}
+              categories={categories}
+            />
+          </DialogContent>
+        </Dialog>
 
         {/* Delete Confirmation Modal */}
         <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
@@ -292,24 +286,6 @@ export default function Services({ services, categories }) {
                   <h3 className="font-semibold">Description</h3>
                   <p className="whitespace-pre-wrap">{selectedService.description}</p>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Base Price</h3>
-                  <p>${selectedService.base_price}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Duration</h3>
-                  <p>{selectedService.duration_minutes} minutes</p>
-                </div>
-                {selectedService.features && selectedService.features.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold">Features</h3>
-                    <ul className="list-disc list-inside">
-                      {selectedService.features.map((feature, index) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
                 <div>
                   <h3 className="font-semibold">Status</h3>
                   <p>{selectedService.is_active ? "Active" : "Inactive"}</p>

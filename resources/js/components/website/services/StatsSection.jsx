@@ -3,10 +3,10 @@ import { Users, Trophy, ThumbsUp, Star } from "lucide-react";
 
 export default function StatsSection() {
     const stats = [
-        { icon: Users, value: "2,000+", label: "Happy Clients" },
-        { icon: Trophy, value: "15+", label: "Years Experience" },
-        { icon: ThumbsUp, value: "98%", label: "Satisfaction Rate" },
-        { icon: Star, value: "4.9/5", label: "Average Rating" }
+        { icon: Users, value: "40+", label: "Happy Clients" },
+        { icon: Trophy, value: "1+", label: "Years Experience" },
+        { icon: ThumbsUp, value: "100%", label: "Satisfaction Rate" },
+        { icon: Star, value: "5/5", label: "Average Rating" }
     ];
 
     return (
@@ -19,7 +19,7 @@ export default function StatsSection() {
                         backgroundPosition: ["0% 0%", "100% 100%"],
                     }}
                     transition={{
-                        duration: 20,
+                        duration: 20, 
                         repeat: Infinity,
                         repeatType: "reverse",
                     }}

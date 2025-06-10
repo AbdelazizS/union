@@ -53,12 +53,7 @@ const menuItems = [
         title: "Services",
         url: route('admin.services.index'),
         description: "Manage all services across categories"
-      },
-      // {
-      //   title: "Pricing",
-      //   url: route('admin.pricing.index'),
-      //   description: "Set hourly rates for service categories"
-      // }
+      }
     ]
   },
   {

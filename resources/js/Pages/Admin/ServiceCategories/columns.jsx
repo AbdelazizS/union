@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-export const columns = (handleEdit, handleDelete, handleView) => [
+export const columns = (handleEdit, handleDelete, handleToggleStatus, handleView) => [
   {
     accessorKey: "name",
     header: "Name",
@@ -18,11 +18,15 @@ export const columns = (handleEdit, handleDelete, handleView) => [
     enableSorting: true,
   },
   {
-    accessorKey: "hourly_rate",
-    header: "Hourly Rate",
-    cell: ({ row }) => (
-      <div>£{Number(row.original.hourly_rate).toFixed(2)}</div>
-    ),
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => <div className="text-gray-500">{row.original.description || '-'}</div>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "services_count",
+    header: "Services",
+    cell: ({ row }) => <div className="">{row.original.services_count || 0}</div>,
     enableSorting: true,
   },
   {
@@ -31,6 +35,8 @@ export const columns = (handleEdit, handleDelete, handleView) => [
     cell: ({ row }) => (
       <Badge
         variant={row.original.is_active ? "success" : "secondary"}
+        className="cursor-pointer"
+        onClick={() => handleToggleStatus(row.original)}
       >
         {row.original.is_active ? "Active" : "Inactive"}
       </Badge>
@@ -53,10 +59,10 @@ export const columns = (handleEdit, handleDelete, handleView) => [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleView(category)}>
+            {/* <DropdownMenuItem onClick={() => handleView(category)}>
               <Eye className="mr-2 h-4 w-4" />
               View
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem onClick={() => handleEdit(category)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit
