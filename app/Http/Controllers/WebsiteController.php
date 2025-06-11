@@ -384,6 +384,25 @@ class WebsiteController extends Controller
         }
     }
 
+    public function submitTestimonial(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'comment' => 'required|string',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        // Create testimonial with default values for is_featured and is_approved
+        Testimonial::create([
+            ...$validated,
+            'is_featured' => false,
+            'is_approved' => false,
+        ]);
+
+        return back()->with('success', 'Thank you for your testimonial! It will be reviewed and published soon.');
+    }
+
     public function booking($serviceId = null)
     {
         $services = Service::with(['category', 'options' => function ($query) {
@@ -542,7 +561,7 @@ class WebsiteController extends Controller
 
                     // Send notification to admin
                     $adminEmail = config('services.notifications.admin_email', 'uniongate30@gmail.com');
-                    $admin = new \App\Models\User(['email' => $adminEmail]);
+                    $admin = new \App\Models\Admin($adminEmail);
                     $admin->notify(new \App\Notifications\NewBookingNotification($booking));
                     
                     \Log::info('Notifications sent successfully', [

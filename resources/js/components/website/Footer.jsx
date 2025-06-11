@@ -4,7 +4,7 @@ import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'luc
 const navigation = {
     services: [
         { name: 'Our Services', href: '/our-services' },
-        { name: 'Book a Service', href: '/booking/create' },
+        { name: 'Book a Service', href: '/book' },
         // { name: 'Service Categories', href: '/our-services' },
         // { name: 'Service Details', href: '/our-services' },
     ],

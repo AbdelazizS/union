@@ -43,7 +43,7 @@ return [
     ],
 
     'notifications' => [
-        'admin_email' => env('ADMIN_EMAIL', 'uniongate30@gmail.com'),
+        'admin_email' => env('ADMIN_EMAIL'),
         'notify_on_booking' => env('NOTIFY_ON_BOOKING', true),
         'notify_on_cancellation' => env('NOTIFY_ON_CANCELLATION', true),
         'notify_before_service' => env('NOTIFY_BEFORE_SERVICE', true),
