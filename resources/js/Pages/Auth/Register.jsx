@@ -95,6 +95,8 @@ export default function Register() {
                 setIsSubmitting(false);
             },
             onError: (errors) => {
+          
+                
                 toast.error("Registration failed. Please check your input.");
                 Object.keys(errors).forEach(key => {
                     form.setError(key, { message: errors[key] });

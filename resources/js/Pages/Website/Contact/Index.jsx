@@ -537,7 +537,7 @@ export default function Contact() {
                             className="space-y-8"
                         >
                             {/* Map */}
-                            <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-primary/10 shadow-lg">
+                            <div className="bg-white dark:bg-gray-900 p-5 lg:p-8 rounded-2xl border border-primary/10 shadow-lg">
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
@@ -553,7 +553,7 @@ export default function Contact() {
                                 </motion.div>
 
                                 <motion.div 
-                                    className="aspect-video rounded-lg overflow-hidden shadow-lg"
+                                    className="h-[360px] md:h-[400px] w-full rounded-lg overflow-hidden shadow-lg"
                                     whileHover={{ scale: 1.02 }}
                                     transition={{ duration: 0.2 }}
                                 >

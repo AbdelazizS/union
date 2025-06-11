@@ -111,6 +111,9 @@ Route::get('/about', [WebsiteController::class, 'about'])->name('about');
 Route::get('/contact', [WebsiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [WebsiteController::class, 'submitContactForm'])->name('contact.submit');
 
+// Add public testimonial submission route
+Route::post('/testimonials', [WebsiteController::class, 'submitTestimonial'])->name('testimonials.submit');
+
 // Legal Pages Routes
 Route::get('/terms', function () {
     return Inertia::render('Website/Terms/Index');
